@@ -24,19 +24,18 @@ const hasInfo = computed(() => typeof configs.info === 'string')
         v-html="configs.info"
       />
       <a
-        href="https://github.com/slidevjs/slidev"
+        href="https://jobs10000.com"
         target="_blank"
         class="!opacity-100 !border-none !text-current"
       >
         <div class="flex gap-1 children:my-auto">
-          <div class="opacity-50 text-sm mr-2">Powered by</div>
+          <div class="opacity-50 text-sm mr-2">平台支撑</div>
           <img
             class="w-5 h-5"
-            src="../assets/logo.png"
-            alt="Slidev logo"
+            src="../assets/ai-genie96.png"
           >
           <div style="color: #2082A6">
-            <b>Sli</b>dev
+            <b>jobs</b>10000
           </div>
         </div>
       </a>

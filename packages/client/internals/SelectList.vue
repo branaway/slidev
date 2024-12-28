@@ -57,6 +57,6 @@ const value = useVModel(props, 'modelValue', emit, { passive: true })
 }
 
 .title {
-  @apply text-xs uppercase opacity-50 tracking-widest px-7 py-1 select-none text-nowrap;
+  @apply text-xs uppercase opacity-50 tracking-widest px-10 py-1 select-none text-nowrap;
 }
 </style>

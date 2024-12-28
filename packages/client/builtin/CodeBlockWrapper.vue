@@ -134,7 +134,7 @@ function copyCode() {
     <button
       v-if="configs.codeCopy"
       class="slidev-code-copy absolute top-0 right-0 transition opacity-0 group-hover:opacity-20 hover:!opacity-100"
-      :title="copied ? 'Copied' : 'Copy'" @click="copyCode()"
+      :title="copied ? '已拷贝' : '拷贝'" @click="copyCode()"
     >
       <ph-check-circle v-if="copied" class="p-2 w-8 h-8" />
       <ph-clipboard v-else class="p-2 w-8 h-8" />

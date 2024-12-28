@@ -166,15 +166,15 @@ onMounted(() => {
           :clicks-context="clicksContext"
         />
         <div class="border-t border-main py-1 px-2 text-sm">
-          <IconButton title="Increase font size" @click="increasePresenterFontSize">
+          <IconButton title="加大字体" @click="increasePresenterFontSize">
             <div class="i-carbon:zoom-in" />
           </IconButton>
-          <IconButton title="Decrease font size" @click="decreasePresenterFontSize">
+          <IconButton title="减小字体" @click="decreasePresenterFontSize">
             <div class="i-carbon:zoom-out" />
           </IconButton>
           <IconButton
             v-if="__DEV__"
-            title="Edit Notes"
+            title="编辑脚本"
             @click="notesEditing = !notesEditing"
           >
             <div class="i-carbon:edit" />

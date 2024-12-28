@@ -44,12 +44,12 @@ ensureDevicesListPermissions()
 
 <template>
   <div class="text-sm">
-    <SelectList v-model="currentCamera" title="Camera" :items="camerasItems" />
-    <SelectList v-model="currentMic" title="Microphone" :items="microphonesItems" />
+    <SelectList v-model="currentCamera" title="摄像头" :items="camerasItems" />
+    <SelectList v-model="currentMic" title="麦克风" :items="microphonesItems" />
     <SelectList
       v-if="mimeTypeItems.length"
       v-model="mimeType"
-      title="mimeType"
+      title="视频格式"
       :items="mimeTypeItems"
     />
   </div>

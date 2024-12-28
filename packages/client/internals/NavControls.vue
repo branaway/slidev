@@ -62,22 +62,22 @@ if (__SLIDEV_FEATURE_RECORD__)
       :class="barStyle"
       @mouseleave="onMouseLeave"
     >
-      <IconButton v-if="!isEmbedded" :title="isFullscreen ? 'Close fullscreen' : 'Enter fullscreen'" @click="toggleFullscreen">
+      <IconButton v-if="!isEmbedded" :title="isFullscreen ? '关闭全屏' : ''" @click="toggleFullscreen">
         <div v-if="isFullscreen" class="i-carbon:minimize" />
         <div v-else class="i-carbon:maximize" />
       </IconButton>
-      <IconButton :class="{ disabled: !hasPrev }" title="Go to previous slide" @click="prev">
+      <IconButton :class="{ disabled: !hasPrev }" title="之前" @click="prev">
         <div class="i-carbon:arrow-left" />
       </IconButton>
-      <IconButton :class="{ disabled: !hasNext }" title="Go to next slide" @click="next">
+      <IconButton :class="{ disabled: !hasNext }" title="之后" @click="next">
         <div class="i-carbon:arrow-right" />
       </IconButton>
-      <IconButton v-if="!isEmbedded" title="Show slide overview" @click="toggleOverview()">
+      <IconButton v-if="!isEmbedded" title="演示大纲" @click="toggleOverview()">
         <div class="i-carbon:apps" />
       </IconButton>
       <IconButton
         v-if="!isColorSchemaConfigured"
-        :title="isDark ? 'Switch to light mode theme' : 'Switch to dark mode theme'"
+        :title="isDark ? '用明亮模式' : '用暗黑模式'"
         @click="toggleDark()"
       >
         <carbon-moon v-if="isDark" />
@@ -94,7 +94,7 @@ if (__SLIDEV_FEATURE_RECORD__)
 
         <IconButton
           v-if="isPresenter"
-          :title="showPresenterCursor ? 'Hide presenter cursor' : 'Show presenter cursor'"
+          :title="showPresenterCursor ? '隐藏演讲者光标' : '显示演讲者光标'"
           @click="showPresenterCursor = !showPresenterCursor"
         >
           <ph-cursor-fill v-if="showPresenterCursor" />
@@ -103,7 +103,7 @@ if (__SLIDEV_FEATURE_RECORD__)
       </template>
 
       <template v-if="__SLIDEV_FEATURE_DRAWINGS__ && (!configs.drawings.presenterOnly || isPresenter) && !isEmbedded">
-        <IconButton class="relative" :title="drawingEnabled ? 'Hide drawing toolbar' : 'Show drawing toolbar'" @click="drawingEnabled = !drawingEnabled">
+        <IconButton class="relative" :title="drawingEnabled ? '隐藏画图工具' : '显示画图工具'" @click="drawingEnabled = !drawingEnabled">
           <div class="i-carbon:pen" />
           <div
             v-if="drawingEnabled"
@@ -115,42 +115,42 @@ if (__SLIDEV_FEATURE_RECORD__)
       </template>
 
       <template v-if="!isEmbedded">
-        <IconButton v-if="isPresenter" title="Play Mode" @click="exitPresenter">
+        <IconButton v-if="isPresenter" title="播放模式" @click="exitPresenter">
           <div class="i-carbon:presentation-file" />
         </IconButton>
-        <IconButton v-if="__SLIDEV_FEATURE_PRESENTER__ && isPresenterAvailable" title="Presenter Mode" @click="enterPresenter">
+        <IconButton v-if="__SLIDEV_FEATURE_PRESENTER__ && isPresenterAvailable" title="演讲者模式" @click="enterPresenter">
           <div class="i-carbon:user-speaker" />
         </IconButton>
 
         <IconButton
           v-if="__DEV__ && __SLIDEV_FEATURE_EDITOR__"
-          :title="showEditor ? 'Hide editor' : 'Show editor'"
+          :title="showEditor ? '隐藏编辑器' : '显示编辑器'"
           class="lt-md:hidden"
           @click="showEditor = !showEditor"
         >
           <div class="i-carbon:text-annotation-toggle" />
         </IconButton>
 
-        <IconButton v-if="isPresenter" title="Toggle Presenter Layout" class="aspect-ratio-initial flex items-center" @click="togglePresenterLayout">
+        <IconButton v-if="isPresenter" title="切换演讲者布局" class="aspect-ratio-initial flex items-center" @click="togglePresenterLayout">
           <div class="i-carbon:template" />
           {{ presenterLayout }}
         </IconButton>
       </template>
       <template v-if="!__DEV__">
-        <IconButton v-if="configs.download" title="Download as PDF" @click="downloadPDF">
+        <IconButton v-if="configs.download" title="下载PDF" @click="downloadPDF">
           <div class="i-carbon:download" />
         </IconButton>
       </template>
 
       <template v-if="__SLIDEV_FEATURE_BROWSER_EXPORTER__">
-        <IconButton title="Browser Exporter" to="/export">
+        <IconButton title="浏览器输出" to="/export">
           <div class="i-carbon:document-pdf" />
         </IconButton>
       </template>
 
       <IconButton
         v-if="!isPresenter && configs.info && !isEmbedded"
-        title="Show info"
+        title="关于"
         @click="showInfoDialog = !showInfoDialog"
       >
         <div class="i-carbon:information" />
@@ -159,7 +159,7 @@ if (__SLIDEV_FEATURE_RECORD__)
       <template v-if="!isPresenter && !isEmbedded">
         <MenuButton>
           <template #button>
-            <IconButton title="More Options">
+            <IconButton title="更多选项">
               <div class="i-carbon:settings-adjust" />
             </IconButton>
           </template>

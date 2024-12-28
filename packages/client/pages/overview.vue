@@ -146,7 +146,7 @@ onMounted(() => {
       <div p2 border="t main">
         <IconButton
           v-if="!isColorSchemaConfigured"
-          :title="isDark ? 'Switch to light mode theme' : 'Switch to dark mode theme'"
+          :title="isDark ? '切到明亮模式主题' : '切到暗黑模式主题'"
           @click="toggleDark()"
         >
           <carbon-moon v-if="isDark" />
@@ -154,7 +154,7 @@ onMounted(() => {
         </IconButton>
         <IconButton
           v-else
-          :title="isDark ? 'Dark mode' : 'Light mode'"
+          :title="isDark ? '暗黑模式' : '明亮模式'"
           pointer-events-none op50
         >
           <carbon-moon v-if="isDark" />
@@ -180,7 +180,7 @@ onMounted(() => {
           </div>
           <IconButton
             class="mr--3 op0 group-hover:op80"
-            title="Play in new tab"
+            title="在新的标签页播放"
             @click="openSlideInNewTab(getSlidePath(route, false))"
           >
             <div class="i-carbon:presentation-file" />
@@ -188,7 +188,7 @@ onMounted(() => {
           <IconButton
             v-if="__DEV__ && route.meta?.slide"
             class="mr--3 op0 group-hover:op80"
-            title="Open in editor"
+            title="在编辑器中打开"
             @click="openInEditor(`${route.meta.slide.filepath}:${route.meta.slide.start}`)"
           >
             <div class="i-carbon:cics-program" />
@@ -223,7 +223,7 @@ onMounted(() => {
         </div>
         <div class="py3 mt-0.5 mr--8 ml--4 op0 transition group-hover:op100">
           <IconButton
-            title="Edit Note"
+            title="编辑脚本"
             class="rounded-full w-9 h-9 text-sm"
             :class="edittingNote === route.no ? 'important:op0' : ''"
             @click="edittingNote = route.no"

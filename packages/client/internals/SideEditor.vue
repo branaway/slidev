@@ -1,5 +1,6 @@
+<!-- Bing: should this be called 'SlideEditor'? -->
 <script setup lang="ts">
-import { throttledWatch, useEventListener } from '@vueuse/core'
+import { useEventListener } from '@vueuse/core'
 import { computed, ref, watch } from 'vue'
 import { useNav } from '../composables/useNav'
 import { useDynamicSlideInfo } from '../composables/useSlideInfo'
@@ -78,9 +79,9 @@ const noteRef = computed({
 })
 
 const handlerDown = ref(false)
-function onHandlerDown() {
-  handlerDown.value = true
-}
+// function onHandlerDown() {
+//   handlerDown.value = true
+// }
 function updateSize(v?: number) {
   if (vertical.value)
     editorHeight.value = Math.min(Math.max(300, v ?? editorHeight.value), window.innerHeight - 200)
@@ -108,27 +109,9 @@ if (props.resize) {
     updateSize()
   })
 }
-
-throttledWatch(
-  [content, note],
-  () => {
-    if (dirty.value)
-      save()
-  },
-  { throttle: 500 },
-)
 </script>
 
 <template>
-  <div
-    v-if="resize" class="fixed bg-gray-400 select-none opacity-0 hover:opacity-10 z-dragging"
-    :class="vertical ? 'left-0 right-0 w-full h-10px' : 'top-0 bottom-0 w-10px h-full'" :style="{
-      opacity: handlerDown ? '0.3' : undefined,
-      bottom: vertical ? `${editorHeight - 5}px` : undefined,
-      right: !vertical ? `${editorWidth - 5}px` : undefined,
-      cursor: vertical ? 'row-resize' : 'col-resize',
-    }" @pointerdown="onHandlerDown"
-  />
   <div
     class="shadow bg-main p-2 pt-4 grid grid-rows-[max-content_1fr] h-full overflow-hidden"
     :class="resize ? 'border-l border-gray-400 border-opacity-20' : ''"
@@ -140,34 +123,41 @@ throttledWatch(
     <div class="flex pb-2 text-xl -mt-1">
       <div class="mr-4 rounded flex">
         <IconButton
-          title="Switch to content tab" :class="tab === 'content' ? 'text-primary' : ''"
+          title="内容" :class="tab === 'content' ? 'text-primary' : ''"
           @click="switchTab('content')"
         >
           <div class="i-carbon:account" />
         </IconButton>
         <IconButton
-          title="Switch to notes tab" :class="tab === 'note' ? 'text-primary' : ''"
+          title="脚本" :class="tab === 'note' ? 'text-primary' : ''"
           @click="switchTab('note')"
         >
           <div class="i-carbon:align-box-bottom-right" />
         </IconButton>
       </div>
       <span class="text-2xl pt-1">
-        {{ tab === 'content' ? 'Slide' : 'Notes' }}
+        {{ tab === 'content' ? '内容' : '脚本' }}
       </span>
       <div class="flex-auto" />
       <template v-if="resize">
-        <IconButton v-if="vertical" title="Dock to right" @click="vertical = false">
+        <IconButton v-if="vertical" title="贴在右边" @click="vertical = false">
           <div class="i-carbon:open-panel-right" />
         </IconButton>
-        <IconButton v-else title="Dock to bottom" @click="vertical = true">
+        <IconButton v-else title="贴在底部" @click="vertical = true">
           <div class="i-carbon:open-panel-bottom" />
         </IconButton>
       </template>
-      <IconButton title="Open in editor" @click="openInEditor()">
+      <IconButton title="用编辑器打开" @click="openInEditor()">
         <div class="i-carbon:launch" />
       </IconButton>
-      <IconButton title="Close" @click="close">
+      <IconButton
+        :title="dirty ? '保存' : '无更改可保存'"
+        :class="dirty ? 'enabled-button' : 'disabled-button'"
+        @click="save"
+      >
+        <div class="i-carbon:save" />
+      </IconButton>
+      <IconButton title="关闭" @click="close">
         <div class="i-carbon:close" />
       </IconButton>
     </div>
@@ -177,3 +167,61 @@ throttledWatch(
     </div>
   </div>
 </template>
+
+<style scoped>
+.disabled-button {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.enabled-button {
+  opacity: 1;
+  cursor: pointer;
+}
+
+.editor-header {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  background-color: var(--header-background, #f5f5f5);
+  border-bottom: 1px solid var(--header-border, #ddd);
+}
+
+.editor-tabs {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-grow: 1;
+}
+
+.editor-tab {
+  display: flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: var(--tab-background, #fff);
+}
+
+.editor-tab:hover {
+  background-color: var(--tab-hover-background, #eaeaea);
+}
+
+.editor-tab.active {
+  background-color: var(--tab-active-background, #0078d4);
+  color: var(--tab-active-color, #fff);
+  font-weight: bold;
+}
+
+.tab-icon {
+  margin-right: 8px;
+  font-size: 1.2em;
+}
+
+.editor-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+</style>

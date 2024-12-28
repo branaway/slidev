@@ -38,7 +38,7 @@ function onMousedown() {
 <template>
   <div
     class="flex gap-1 items-center select-none"
-    :title="`Clicks in this slide: ${length}`"
+    :title="`本页点击数: ${length}`"
     :class="length && props.clicksContext.isMounted ? '' : 'op50'"
   >
     <div class="flex gap-0.2 items-center min-w-16 font-mono mr1">

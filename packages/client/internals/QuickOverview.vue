@@ -158,13 +158,13 @@ watchEffect(() => {
     </div>
   </Transition>
   <div v-if="showOverview" class="fixed top-4 right-4 z-modal text-gray-400 flex flex-col items-center gap-2">
-    <IconButton title="Close" class="text-2xl" @click="close">
+    <IconButton title="关闭" class="text-2xl" @click="close">
       <div class="i-carbon:close" />
     </IconButton>
     <IconButton
       v-if="__SLIDEV_FEATURE_PRESENTER__"
       as="a"
-      title="Slides Overview"
+      title="幻灯片列表"
       target="_blank"
       :href="`${pathPrefix}overview`"
       tab-index="-1"
