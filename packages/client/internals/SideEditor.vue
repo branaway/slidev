@@ -120,46 +120,46 @@ if (props.resize) {
       width: !vertical ? `${editorWidth}px` : undefined,
     } : {}"
   >
-    <div class="flex pb-2 text-xl -mt-1">
-      <div class="mr-4 rounded flex">
-        <IconButton
-          title="内容" :class="tab === 'content' ? 'text-primary' : ''"
+    <div class="editor-header">
+      <div class="editor-tabs">
+        <div
+          class="editor-tab"
+          :class="{ active: tab === 'content' }"
           @click="switchTab('content')"
         >
-          <div class="i-carbon:account" />
-        </IconButton>
-        <IconButton
-          title="脚本" :class="tab === 'note' ? 'text-primary' : ''"
+          <div class="tab-icon i-carbon:account" />
+          <span>内容</span>
+        </div>
+        <div
+          class="editor-tab"
+          :class="{ active: tab === 'note' }"
           @click="switchTab('note')"
         >
-          <div class="i-carbon:align-box-bottom-right" />
-        </IconButton>
+          <div class="tab-icon i-carbon:align-box-bottom-right" />
+          <span>脚本</span>
+        </div>
       </div>
-      <span class="text-2xl pt-1">
-        {{ tab === 'content' ? '内容' : '脚本' }}
-      </span>
-      <div class="flex-auto" />
-      <template v-if="resize">
-        <IconButton v-if="vertical" title="贴在右边" @click="vertical = false">
+      <div class="editor-header-controls">
+        <IconButton v-if="resize" title="贴在右边" @click="vertical = false">
           <div class="i-carbon:open-panel-right" />
         </IconButton>
         <IconButton v-else title="贴在底部" @click="vertical = true">
           <div class="i-carbon:open-panel-bottom" />
         </IconButton>
-      </template>
-      <IconButton title="用编辑器打开" @click="openInEditor()">
-        <div class="i-carbon:launch" />
-      </IconButton>
-      <IconButton
-        :title="dirty ? '保存' : '无更改可保存'"
-        :class="dirty ? 'enabled-button' : 'disabled-button'"
-        @click="save"
-      >
-        <div class="i-carbon:save" />
-      </IconButton>
-      <IconButton title="关闭" @click="close">
-        <div class="i-carbon:close" />
-      </IconButton>
+        <IconButton title="用编辑器打开" @click="openInEditor()">
+          <div class="i-carbon:launch" />
+        </IconButton>
+        <IconButton
+          :title="dirty ? '保存' : '无更改可保存'"
+          :class="dirty ? 'enabled-button' : 'disabled-button'"
+          @click="save"
+        >
+          <div class="i-carbon:save" />
+        </IconButton>
+        <IconButton title="关闭" @click="close">
+          <div class="i-carbon:close" />
+        </IconButton>
+      </div>
     </div>
     <div class="relative overflow-hidden rounded" style="background-color: var(--slidev-code-background)">
       <ShikiEditor v-show="tab === 'content'" v-model="contentRef" placeholder="Create slide content..." />
@@ -169,17 +169,7 @@ if (props.resize) {
 </template>
 
 <style scoped>
-.disabled-button {
-  opacity: 0.5;
-  pointer-events: none;
-  cursor: not-allowed;
-}
-
-.enabled-button {
-  opacity: 1;
-  cursor: pointer;
-}
-
+/* General Header Styling */
 .editor-header {
   display: flex;
   align-items: center;
@@ -198,10 +188,11 @@ if (props.resize) {
 .editor-tab {
   display: flex;
   align-items: center;
-  padding: 6px 12px;
-  border-radius: 4px;
+  padding: 8px 16px;
+  border-radius: 6px;
   cursor: pointer;
   background-color: var(--tab-background, #fff);
+  /* transition: background-color 0.2s, color 0.2s; */
 }
 
 .editor-tab:hover {
@@ -216,12 +207,46 @@ if (props.resize) {
 
 .tab-icon {
   margin-right: 8px;
-  font-size: 1.2em;
+  font-size: 1.6em; /* Increased icon size */
 }
 
+/* Enlarged Icon Buttons */
 .editor-header-controls {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.IconButton {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 48px; /* Increased button size */
+  height: 48px; /* Increased button size */
+  font-size: 1.5em; /* Larger icons */
+  border-radius: 50%; /* Circular buttons */
+  background-color: var(--icon-button-background, #f5f5f5);
+  /* transition: background-color 0.2s, transform 0.1s; */
+}
+
+.IconButton:hover {
+  background-color: var(--icon-button-hover-background, #eaeaea);
+  transform: scale(1.1); /* Slight hover zoom effect */
+}
+
+.IconButton:active {
+  background-color: var(--icon-button-active-background, #ddd);
+  transform: scale(1); /* Reset zoom on click */
+}
+
+.enabled-button {
+  opacity: 1;
+  cursor: pointer;
+}
+
+.disabled-button {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
 }
 </style>
