@@ -4,7 +4,7 @@ import { useEventListener } from '@vueuse/core'
 import { computed, ref, watch } from 'vue'
 import { useNav } from '../composables/useNav'
 import { useDynamicSlideInfo } from '../composables/useSlideInfo'
-import { activeElement, editorHeight, editorWidth, isInputting, showEditor, isEditorVertical as vertical } from '../state'
+import { activeElement, editorHeight, editorWidth, showEditor, isEditorVertical as vertical } from '../state'
 import IconButton from './IconButton.vue'
 import ShikiEditor from './ShikiEditor.vue'
 
@@ -20,19 +20,32 @@ const note = ref('')
 const dirty = ref(false)
 
 const { info, update } = useDynamicSlideInfo(currentSlideNo)
+// const { info, update } = useSlideInfo(currentSlideNo.value)
 
 watch(
   info,
   (v) => {
-    if (!isInputting.value) {
-      note.value = (v?.note || '').trim()
-      const frontmatterPart = v?.frontmatterRaw?.trim() ? `---\n${v.frontmatterRaw.trim()}\n---\n\n` : ''
-      content.value = frontmatterPart + (v?.content || '').trim()
-      dirty.value = false
-    }
+    // if (!isInputting.value) {
+    note.value = (v?.note || '').trim()
+    const frontmatterPart = v?.frontmatterRaw?.trim() ? `---\n${v.frontmatterRaw.trim()}\n---\n\n` : ''
+    content.value = frontmatterPart + (v?.content || '').trim()
+    dirty.value = false
+    // }
+    // else {
+    //   alert('内容在其他地方被修改. 请先保存当前编辑器中的内容.')
+    // }
   },
   { immediate: true },
 )
+
+// async function reload() {
+//   invalidateCache(currentSlideNo.value)
+//   note.value = (info.value?.note || '').trim()
+//       const frontmatterPart = v.value?.frontmatterRaw?.trim() ? `---\n${info.value?.frontmatterRaw?.trim()}\n---\n\n` : ''
+//     content.value = frontmatterPart + (info.value?.content || '').trim()
+//       dirty.value = false
+
+// }
 
 async function save() {
   dirty.value = false
@@ -113,7 +126,7 @@ if (props.resize) {
 
 <template>
   <div
-    class="shadow bg-main p-2 pt-4 grid grid-rows-[max-content_1fr] h-full overflow-hidden"
+    class="shadow bg-main p-2  grid grid-rows-[max-content_1fr] h-full overflow-hidden"
     :class="resize ? 'border-l border-gray-400 border-opacity-20' : ''"
     :style="resize ? {
       height: vertical ? `${editorHeight}px` : undefined,
@@ -128,7 +141,7 @@ if (props.resize) {
           @click="switchTab('content')"
         >
           <div class="tab-icon i-carbon:account" />
-          <span>内容</span>
+          <span>页面</span>
         </div>
         <div
           class="editor-tab"
@@ -136,7 +149,7 @@ if (props.resize) {
           @click="switchTab('note')"
         >
           <div class="tab-icon i-carbon:align-box-bottom-right" />
-          <span>脚本</span>
+          <span>脚本 ({{ noteRef.length }})</span>
         </div>
       </div>
       <div class="editor-header-controls">
@@ -149,21 +162,29 @@ if (props.resize) {
         <IconButton title="用编辑器打开" @click="openInEditor()">
           <div class="i-carbon:launch" />
         </IconButton>
+
         <IconButton
           :title="dirty ? '保存' : '无更改可保存'"
           :class="dirty ? 'enabled-button' : 'disabled-button'"
           @click="save"
         >
-          <div class="i-carbon:save" />
+          <div class="i-ic:outline-save-alt w-24px h-24px" />
+          <!-- <div class="i-carbon:save" /> -->
         </IconButton>
+
+        <!-- not working yet -- bing
+          <IconButton title="刷新" @click="reload">
+          <div class="i-mdi:reload w-24px h-24px"></div>
+        </IconButton> -->
+
         <IconButton title="关闭" @click="close">
           <div class="i-carbon:close" />
         </IconButton>
       </div>
     </div>
     <div class="relative overflow-hidden rounded" style="background-color: var(--slidev-code-background)">
-      <ShikiEditor v-show="tab === 'content'" v-model="contentRef" placeholder="Create slide content..." />
-      <ShikiEditor v-show="tab === 'note'" v-model="noteRef" placeholder="Write some notes..." />
+      <ShikiEditor v-show="tab === 'content'" v-model="contentRef" placeholder="编辑显示内容(Markdown语法)..." />
+      <ShikiEditor v-show="tab === 'note'" v-model="noteRef" placeholder="编写演讲脚本..." />
     </div>
   </div>
 </template>
@@ -173,7 +194,7 @@ if (props.resize) {
 .editor-header {
   display: flex;
   align-items: center;
-  padding: 8px;
+  padding: 0px;
   background-color: var(--header-background, #f5f5f5);
   border-bottom: 1px solid var(--header-border, #ddd);
 }
@@ -181,7 +202,7 @@ if (props.resize) {
 .editor-tabs {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 0px;
   flex-grow: 1;
 }
 
@@ -245,7 +266,7 @@ if (props.resize) {
 }
 
 .disabled-button {
-  opacity: 0.5;
+  opacity: 0.2;
   pointer-events: none;
   cursor: not-allowed;
 }

@@ -18,6 +18,7 @@ export function useSlideInfo(no: number): UseSlideInfo {
     }
   }
   const url = `/__slidev/slides/${no}.json`
+  // if (__DEV__) console.log(`[slidev] Fetching slide ${no} from ${url}`)
   const { data: info, execute } = useFetch(url).json<SlideInfo>().get()
 
   execute()
@@ -55,9 +56,16 @@ export function useSlideInfo(no: number): UseSlideInfo {
 
 const map: Record<number, UseSlideInfo> = {}
 
+// not quite working -- bran
+export function invalidateCache(no: number) {
+  delete map[no]
+}
+
 export function useDynamicSlideInfo(no: MaybeRef<number>) {
   function get(no: number) {
     return map[no] ??= useSlideInfo(no)
+    // bing: how about skipping the cache? not working
+    // return useSlideInfo(no)
   }
 
   return {

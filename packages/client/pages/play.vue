@@ -79,9 +79,9 @@ if (__DEV__ && __SLIDEV_FEATURE_EDITOR__)
       <template #controls>
         <div
           v-if="!isPrintMode"
-          class="absolute bottom-0 left-0 transition duration-300 opacity-0 hover:opacity-100 focus-within:opacity-100 focus-visible:opacity-100"
+          class="absolute bottom-0 left-1/2 transform -translate-x-1/2 transition duration-300 opacity-0 hover:opacity-100 focus-within:opacity-100 focus-visible:opacity-100"
           :class="[
-            persistNav ? '!opacity-100 right-0' : 'opacity-0 p-2',
+            persistNav ? '!opacity-100' : 'opacity-0 p-2',
             isDrawing ? 'pointer-events-none' : '',
           ]"
         >

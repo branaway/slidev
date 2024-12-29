@@ -123,10 +123,10 @@ onMounted(() => {
           class="w-full pb2 px4 flex-none"
         />
         <div class="absolute left-0 top-0 bg-main border-b border-r border-main px2 py1 op50 text-sm">
-          Current
+          当前页点({{ currentSlideNo }})
         </div>
       </div>
-      <div class="relative grid-section next flex flex-col p-2 lg:p-4">
+      <div class="relative grid-section next flex flex-col p-4 lg:p-4">
         <SlideContainer v-if="nextFrame && nextFrameClicksCtx" key="next">
           <SlideWrapper
             :key="nextFrame[0].no"
@@ -137,11 +137,11 @@ onMounted(() => {
         </SlideContainer>
         <div v-else class="h-full flex justify-center items-center">
           <div class="text-gray-500">
-            End of the presentation
+            幻灯片结尾
           </div>
         </div>
         <div class="absolute left-0 top-0 bg-main border-b border-r border-main px2 py1 op50 text-sm">
-          Next
+          下一页({{ nextFrame?.[0].no }})
         </div>
       </div>
       <div v-if="SideEditor && showEditor" class="grid-section note of-auto">

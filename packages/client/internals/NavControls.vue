@@ -58,7 +58,7 @@ if (__SLIDEV_FEATURE_RECORD__)
 <template>
   <nav ref="root" class="flex flex-col">
     <div
-      class="flex flex-wrap-reverse text-xl gap-0.5 p-1 lg:p-2"
+      class="flex flex-wrap text-xl gap-0.5 p-1 lg:p-2"
       :class="barStyle"
       @mouseleave="onMouseLeave"
     >
@@ -147,6 +147,9 @@ if (__SLIDEV_FEATURE_RECORD__)
           <div class="i-carbon:document-pdf" />
         </IconButton>
       </template>
+      <!--
+
+    -->
 
       <IconButton
         v-if="!isPresenter && configs.info && !isEmbedded"
@@ -168,16 +171,13 @@ if (__SLIDEV_FEATURE_RECORD__)
           </template>
         </MenuButton>
       </template>
-
       <VerticalDivider v-if="!isEmbedded" />
 
-      <div class="h-40px flex" p="l-1 t-0.5 r-2" text="sm leading-2">
-        <div class="my-auto">
-          {{ currentSlideNo }}
-          <span class="opacity-50">/ {{ total }}</span>
-        </div>
+      <div p="l-1 t-2 r-2" text="sm leading-2">
+        {{ currentSlideNo }}<span class="opacity-50"> / {{ total }}</span>
       </div>
-
+      <!--
+ -->
       <CustomNavControls />
     </div>
   </nav>

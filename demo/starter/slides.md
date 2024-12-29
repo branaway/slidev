@@ -15,11 +15,13 @@ info: |
 class: text-center
 # https://sli.dev/features/drawing
 drawings:
+  enabled: false
   persist: false
 # slide transition: https://sli.dev/guide/animations.html#slide-transitions
 transition: slide-left
 # enable MDC Syntax: https://sli.dev/features/mdc
 mdc: true
+browserExporter: false
 ---
 
 # Welcome to Slidev
@@ -85,7 +87,7 @@ Here is another comment.
 -->
 
 ---
-transition: slide-up
+transition: slide-down
 level: 2
 ---
 
@@ -137,7 +139,7 @@ image: https://cover.sli.dev
 
 # Code
 
-Use code snippets and get the highlighting directly, and even types hover!
+Use code snippets and get the highlighting directly, and even types hover!!
 
 ```ts {all|5|7|7-8|10|all} twoslash
 // TwoSlash enables TypeScript hover information
@@ -175,7 +177,7 @@ doubled.value = 2
 </style>
 
 <!--
-Notes can also sync with clicks
+Notes can also sync with clicks:
 
 [click] This will be highlighted after the first click
 
@@ -301,12 +303,12 @@ Also, HTML elements are valid:
 -->
 
 ---
-class: px-20
+class: px-30
 ---
 
 # Themes
 
-Slidev comes with powerful theming support. Themes can provide styles, layouts, components, or even configurations for tools. Switching between themes by just **one edit** in your frontmatter:
+Slidev comes with powerful theming support. Themes can provide styles, layouts, components, or even configurations for tools. Switching between themes by just *edit* in your frontmatter:
 
 <div grid="~ cols-2 gap-2" m="t-2">
 
@@ -330,6 +332,10 @@ theme: seriph
 
 Read more about [How to use a theme](https://sli.dev/guide/theme-addon#use-theme) and
 check out the [Awesome Themes Gallery](https://sli.dev/resources/theme-gallery).
+
+<!--
+Slidev comes with powerful theming support. Themes can provide styles, layouts, components, or even configurations for tools. Switching between themes by just **edit** in your front-matter
+-->
 
 ---
 

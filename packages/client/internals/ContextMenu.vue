@@ -97,13 +97,13 @@ const top = computed(() => {
       <div class="w-full my1 border-t border-main" />
       <div class="w-full text-xs p2">
         <div class="text-main text-opacity-50!">
-          Hold <kbd class="border px1 py0.5 border-main rounded text-primary">Shift</kbd> and right click to open the native context menu
+          按住 <kbd class="border px1 py0.5 border-main rounded text-primary">Shift</kbd> 右点击打开浏览器原生菜单
           <button
             v-if="__DEV__"
             class="underline op50 hover:op100 mt1 block"
             @click="disableContextMenu()"
           >
-            Disable custom context menu
+            关闭定制上下文菜单
           </button>
         </div>
       </div>

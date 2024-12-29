@@ -116,21 +116,23 @@ export async function createDataUtils(resolved: Omit<ResolvedSlidevOptions, 'uti
 
 function getDefine(options: Omit<ResolvedSlidevOptions, 'utils'>): Record<string, string> {
   const matchMode = (mode: string | boolean) => mode === true || mode === options.mode
+  const features = {
+    __DEV__: options.mode === 'dev',
+    __SLIDEV_CLIENT_ROOT__: toAtFS(options.clientRoot),
+    __SLIDEV_HASH_ROUTE__: options.data.config.routerMode === 'hash',
+    __SLIDEV_FEATURE_DRAWINGS__: matchMode(options.data.config.drawings.enabled),
+    __SLIDEV_FEATURE_EDITOR__: options.mode === 'dev' && options.data.config.editor !== false,
+    __SLIDEV_FEATURE_DRAWINGS_PERSIST__: !!options.data.config.drawings.persist,
+    __SLIDEV_FEATURE_RECORD__: matchMode(options.data.config.record),
+    __SLIDEV_FEATURE_PRESENTER__: matchMode(options.data.config.presenter),
+    __SLIDEV_FEATURE_PRINT__: options.mode === 'export' || (options.mode === 'build' && [true, 'true', 'auto'].includes(options.data.config.download)),
+    __SLIDEV_FEATURE_BROWSER_EXPORTER__: matchMode(options.data.config.browserExporter),
+    __SLIDEV_FEATURE_WAKE_LOCK__: matchMode(options.data.config.wakeLock),
+    __SLIDEV_HAS_SERVER__: options.mode !== 'build',
+  }
+  // console.debug('[slidev] define', features)
   return objectMap(
-    {
-      __DEV__: options.mode === 'dev',
-      __SLIDEV_CLIENT_ROOT__: toAtFS(options.clientRoot),
-      __SLIDEV_HASH_ROUTE__: options.data.config.routerMode === 'hash',
-      __SLIDEV_FEATURE_DRAWINGS__: matchMode(options.data.config.drawings.enabled),
-      __SLIDEV_FEATURE_EDITOR__: options.mode === 'dev' && options.data.config.editor !== false,
-      __SLIDEV_FEATURE_DRAWINGS_PERSIST__: !!options.data.config.drawings.persist,
-      __SLIDEV_FEATURE_RECORD__: matchMode(options.data.config.record),
-      __SLIDEV_FEATURE_PRESENTER__: matchMode(options.data.config.presenter),
-      __SLIDEV_FEATURE_PRINT__: options.mode === 'export' || (options.mode === 'build' && [true, 'true', 'auto'].includes(options.data.config.download)),
-      __SLIDEV_FEATURE_BROWSER_EXPORTER__: matchMode(options.data.config.browserExporter),
-      __SLIDEV_FEATURE_WAKE_LOCK__: matchMode(options.data.config.wakeLock),
-      __SLIDEV_HAS_SERVER__: options.mode !== 'build',
-    },
+    features,
     (v, k) => [v, JSON.stringify(k)],
   )
 }

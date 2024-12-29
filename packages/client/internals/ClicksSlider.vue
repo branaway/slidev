@@ -38,7 +38,7 @@ function onMousedown() {
 <template>
   <div
     class="flex gap-1 items-center select-none"
-    :title="`本页点击数: ${length}`"
+    :title="`本页点击步数: ${length}`"
     :class="length && props.clicksContext.isMounted ? '' : 'op50'"
   >
     <div class="flex gap-0.2 items-center min-w-16 font-mono mr1">
@@ -61,10 +61,10 @@ function onMousedown() {
     >
       <div
         v-for="i of clicksRange" :key="i"
-        border="y main" of-hidden relative
+        border="1 dark-2" of-hidden relative
         :class="[
-          i === 0 ? 'rounded-l border-l' : '',
-          i === total ? 'rounded-r border-r' : '',
+          i === 0 ? 'rounded-l' : '',
+          i === total ? 'rounded-r' : '',
         ]"
         :style="{ width: length > 0 ? `${1 / length * 100}%` : '100%' }"
       >
@@ -80,7 +80,7 @@ function onMousedown() {
           ]"
           w-full h-full text-xs flex items-center justify-center z-1
         >
-          {{ i }}
+          <span class="i-carbon:cursor-1" />{{ i }}
         </div>
       </div>
       <input

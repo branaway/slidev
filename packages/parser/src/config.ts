@@ -98,6 +98,7 @@ export function resolveConfig(headmatter: any, themeMeta: SlidevThemeMeta = {}, 
   if (verify)
     verifyConfig(config, themeMeta)
 
+  console.warn({ config })
   return config
 }
 
