@@ -140,7 +140,7 @@ if (props.resize) {
           :class="{ active: tab === 'content' }"
           @click="switchTab('content')"
         >
-          <div class="tab-icon i-carbon:account" />
+          <!-- <div class="tab-icon i-carbon:account" /> -->
           <span>页面</span>
         </div>
         <div
@@ -148,8 +148,8 @@ if (props.resize) {
           :class="{ active: tab === 'note' }"
           @click="switchTab('note')"
         >
-          <div class="tab-icon i-carbon:align-box-bottom-right" />
-          <span>脚本 ({{ noteRef.length }})</span>
+          <!-- <div class="tab-icon i-carbon:align-box-bottom-right" /> -->
+          <span>脚本 {{ noteRef.length > 0 ? '●' : '' }}</span>
         </div>
       </div>
       <div class="editor-header-controls">
@@ -209,8 +209,8 @@ if (props.resize) {
 .editor-tab {
   display: flex;
   align-items: center;
-  padding: 8px 16px;
-  border-radius: 6px;
+  padding: 8px 8px;
+  border-radius: 6px 6px 0 0;
   cursor: pointer;
   background-color: var(--tab-background, #fff);
   /* transition: background-color 0.2s, color 0.2s; */

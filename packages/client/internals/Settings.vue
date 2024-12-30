@@ -6,7 +6,7 @@ import SelectList from './SelectList.vue'
 
 const scaleItems: SelectionItem<number>[] = [
   {
-    display: 'Fit',
+    display: '适应',
     value: 0,
   },
   {
@@ -19,11 +19,11 @@ const { isSupported } = useWakeLock()
 
 const wakeLockItems: SelectionItem<boolean>[] = [
   {
-    display: 'Enabled',
+    display: '打开',
     value: true,
   },
   {
-    display: 'Disabled',
+    display: '关闭',
     value: false,
   },
 ]
@@ -31,10 +31,10 @@ const wakeLockItems: SelectionItem<boolean>[] = [
 
 <template>
   <div class="text-sm select-none mb-2">
-    <SelectList v-model="slideScale" title="Scale" :items="scaleItems" />
+    <SelectList v-model="slideScale" title="缩放" :items="scaleItems" />
     <SelectList
       v-if="__SLIDEV_FEATURE_WAKE_LOCK__ && isSupported"
-      v-model="wakeLockEnabled" title="Wake lock" :items="wakeLockItems"
+      v-model="wakeLockEnabled" title="不进入休眠" :items="wakeLockItems"
     />
   </div>
 </template>
