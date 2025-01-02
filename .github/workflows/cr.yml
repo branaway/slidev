@@ -1,6 +1,9 @@
 # Continuous Releases provided by https://pkg.pr.new
 name: CR (Continuous Releases)
-on: [pull_request]
+on:
+  push:
+    branches:
+      - tutor
 
 jobs:
   cr:
