@@ -427,10 +427,6 @@ patchedDependencies:
 importers:
 
   .:
-    dependencies:
-      '@slidev/client':
-        specifier: link:/Users/bran/localProjects/slidev/packages/client
-        version: link:packages/client
     devDependencies:
       '@antfu/eslint-config':
         specifier: 'catalog:'
