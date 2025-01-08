@@ -22,6 +22,8 @@ transition: slide-left
 # enable MDC Syntax: https://sli.dev/features/mdc
 mdc: true
 browserExporter: false
+editor: true
+
 ---
 
 # Welcome to Slidev

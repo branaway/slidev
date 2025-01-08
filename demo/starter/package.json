@@ -4,7 +4,7 @@
   "scripts": {
     "build": "slidev build",
     "dev": "nodemon -w '../../packages/slidev/dist/*.mjs' --exec \"slidev ./slides.md --open=true --log=info --inspect\"",
-    "dev2": "nodemon -w '../../packages/slidev/dist/*.js' --exec \"../../packages/slidev/bin/slidev.mjs ./slides.md --open=true --log=info --inspect\"",
+    "dev2": "nodemon -w '../../packages/slidev/dist/*.js' --exec \"../../packages/slidev/bin/slidev.mjs ./slides.md --open=true --log=info --inspect --remote='zxc'\"",
     "export": "slidev export",
     "export-notes": "slidev export-notes"
   },

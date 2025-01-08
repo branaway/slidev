@@ -10,7 +10,7 @@ export default function setupRoutes() {
       return true
     if (configs.remote && to.query.password === undefined) {
       // eslint-disable-next-line no-alert
-      const password = prompt('Enter password')
+      const password = prompt('输入远程访问密码')
       if (configs.remote === password)
         return true
     }

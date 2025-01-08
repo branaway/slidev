@@ -130,7 +130,8 @@ function getDefine(options: Omit<ResolvedSlidevOptions, 'utils'>): Record<string
     __SLIDEV_FEATURE_WAKE_LOCK__: matchMode(options.data.config.wakeLock),
     __SLIDEV_HAS_SERVER__: options.mode !== 'build',
   }
-  // console.debug('[slidev] define', features)
+  // eslint-disable-next-line no-console
+  console.debug('[slidev] define', features)
   return objectMap(
     features,
     (v, k) => [v, JSON.stringify(k)],

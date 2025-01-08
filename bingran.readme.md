@@ -164,6 +164,12 @@ in `indexHtml.ts`
 
 - see packages/parser/src/config.ts
 
+## built-in vite config:
+
+packages/slidev/node/vite/extendConfig.ts
+
+
+
 ## server part
 
 - in the `loader.ts`, there is a function `createSlidesLoader` that set up a vite server route to save content from the front end.

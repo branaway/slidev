@@ -38,7 +38,7 @@ onMounted(() => {
     v-if="currentCamera !== 'none'"
     class="<md:hidden"
     :class="{ 'text-green-500': Boolean(showAvatar && streamCamera) }"
-    title="切换摄像图视图"
+    title="开关摄像头"
     @click="toggleAvatar"
   >
     <div class="i-carbon:user-avatar" />

@@ -43,7 +43,13 @@ export async function load(userRoot: string, filepath: string, loadedSource: Rec
   const watchFiles: Record<string, Set<number>> = {}
   const slides: SlideInfo[] = []
 
-  async function loadMarkdown(path: string, range?: string, frontmatterOverride?: Record<string, unknown>, importers?: SourceSlideInfo[]) {
+  async function loadMarkdown(
+    path: string,
+    range?: string,
+    frontmatterOverride?: Record<string, unknown>,
+    importers?: SourceSlideInfo[],
+
+  ): Promise<SlidevMarkdown> {
     let md = markdownFiles[path]
     if (!md) {
       const raw = loadedSource[path] ?? fs.readFileSync(path, 'utf-8')
@@ -128,7 +134,7 @@ export async function load(userRoot: string, filepath: string, loadedSource: Rec
     entry,
     headmatter,
     features: detectFeatures(slides.map(s => s.source.raw).join('')),
-    markdownFiles,
+    markdownFiles, // why shout it be here? It's a collection of markdown files, not just this markdown -- bran
     watchFiles,
   }
 }
