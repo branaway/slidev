@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useHead } from '@unhead/vue'
-import { useMouse, useWindowFocus } from '@vueuse/core'
+import { useLocalStorage, useMouse, useWindowFocus } from '@vueuse/core'
 import { computed, onMounted, reactive, ref, shallowRef, watch } from 'vue'
 import { createFixedClicks } from '../composables/useClicks'
 import { useDrawings } from '../composables/useDrawings'
@@ -18,6 +18,8 @@ import NavControls from '../internals/NavControls.vue'
 import NoteEditable from '../internals/NoteEditable.vue'
 import NoteStatic from '../internals/NoteStatic.vue'
 import QuickOverview from '../internals/QuickOverview.vue'
+import ScreenCaptureMirror from '../internals/ScreenCaptureMirror.vue'
+import SegmentControl from '../internals/SegmentControl.vue'
 import SlideContainer from '../internals/SlideContainer.vue'
 import SlidesShow from '../internals/SlidesShow.vue'
 import SlideWrapper from '../internals/SlideWrapper.vue'
@@ -26,6 +28,7 @@ import { registerShortcuts } from '../logic/shortcuts'
 import { decreasePresenterFontSize, increasePresenterFontSize, presenterLayout, presenterNotesFontSize, showEditor, showPresenterCursor } from '../state'
 import { sharedState } from '../state/shared'
 
+const inFocus = useWindowFocus()
 const main = ref<HTMLDivElement>()
 
 registerShortcuts()
@@ -49,7 +52,7 @@ useHead({ title: `Presenter - ${slidesTitle}` })
 
 const notesEditing = ref(false)
 
-const { timer, isTimerAvctive, resetTimer, toggleTimer } = useTimer()
+const { timer, isTimerActive, resetTimer, toggleTimer } = useTimer()
 
 const clicksCtxMap = computed(() => slides.value.map(route => createFixedClicks(route)))
 const nextFrame = computed(() => {
@@ -74,6 +77,7 @@ watch(
   { immediate: true },
 )
 
+const mainSlideMode = useLocalStorage<'slides' | 'mirror'>('slidev-presenter-main-slide-mode', 'slides')
 const SideEditor = shallowRef<any>()
 if (__DEV__ && __SLIDEV_FEATURE_EDITOR__)
   import('../internals/SideEditor.vue').then(v => SideEditor.value = v.default)
@@ -86,7 +90,7 @@ onMounted(() => {
 
   watch(
     () => {
-      if (!focus.value || isDrawing.value || !showPresenterCursor.value)
+      if (!focus.value || isDrawing.value || !showPresenterCursor.value || !slidesContainer)
         return undefined
 
       const rect = slidesContainer.getBoundingClientRect()
@@ -106,10 +110,27 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="bg-main h-full slidev-presenter">
+  <div class="bg-main h-full slidev-presenter" pt-2px>
     <div class="grid-container" :class="`layout${presenterLayout}`">
       <div ref="main" class="relative grid-section main flex flex-col">
+        <div flex="~ gap-4 items-center" border="b main" p1>
+          <span op50 px2>Current</span>
+          <div flex-auto />
+          <SegmentControl
+            v-model="mainSlideMode"
+            :options="[
+              { label: 'Slides', value: 'slides' },
+              { label: 'Screen Mirror', value: 'mirror' },
+            ]"
+          />
+        </div>
+        <template v-if="mainSlideMode === 'mirror'">
+          <ScreenCaptureMirror />
+        </template>
+
+        <!-- We use v-show here to still infer the clicks context -->
         <SlideContainer
+          v-show="mainSlideMode === 'slides'"
           key="main"
           class="p-2 lg:p-4 flex-auto"
           is-main
@@ -117,14 +138,12 @@ onMounted(() => {
         >
           <SlidesShow render-context="presenter" />
         </SlideContainer>
+
         <ClicksSlider
           :key="currentSlideRoute?.no"
           :clicks-context="getPrimaryClicks(currentSlideRoute)"
           class="w-full pb2 px4 flex-none"
         />
-        <div class="absolute left-0 top-0 bg-main border-b border-r border-main px2 py1 op50 text-sm">
-          当前页点({{ currentSlideNo }})
-        </div>
       </div>
       <div class="relative grid-section next flex flex-col p-4 lg:p-4">
         <SlideContainer v-if="nextFrame && nextFrameClicksCtx" key="next">
@@ -165,7 +184,8 @@ onMounted(() => {
           :style="{ fontSize: `${presenterNotesFontSize}em` }"
           :clicks-context="clicksContext"
         />
-        <div class="border-t border-main py-1 px-2 text-sm">
+        <div border-t border-main />
+        <div class="py-1 px-2 text-sm transition" :class="inFocus ? '' : 'op25'">
           <IconButton title="加大字体" @click="increasePresenterFontSize">
             <div class="i-carbon:zoom-in" />
           </IconButton>
@@ -182,14 +202,14 @@ onMounted(() => {
         </div>
       </div>
       <div class="grid-section bottom flex">
-        <NavControls :persist="true" />
+        <NavControls :persist="true" class="transition" :class="inFocus ? '' : 'op25'" />
         <div flex-auto />
         <div class="group flex items-center justify-center pl-4 select-none">
           <div class="w-22px cursor-pointer">
             <div class="i-carbon:time group-hover:hidden text-xl" />
             <div class="group-not-hover:hidden flex flex-col items-center">
               <div class="relative op-80 hover:op-100" @click="toggleTimer">
-                <div v-if="isTimerAvctive" class="i-carbon:pause text-lg" />
+                <div v-if="isTimerActive" class="i-carbon:pause text-lg" />
                 <div v-else class="i-carbon:play" />
               </div>
               <div class="op-80 hover:op-100" @click="resetTimer">

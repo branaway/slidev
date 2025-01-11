@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { provideLocal, useElementSize, useStyleTag } from '@vueuse/core'
-import { computed, onMounted, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useNav } from '../composables/useNav'
 import { injectionSlideElement, injectionSlideScale } from '../constants'
 import { slideAspect, slideHeight, slideWidth } from '../env'
+import { isDark } from '../logic/dark'
 import { snapshotManager } from '../logic/snapshot'
 import { slideScale } from '../state'
 
@@ -26,6 +27,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  contentStyle: {
+    type: Object,
+    default: () => ({}),
+  },
 })
 
 const { isPrintMode } = useNav()
@@ -44,6 +49,7 @@ const scale = computed(() => {
 })
 
 const contentStyle = computed(() => ({
+  ...props.contentStyle,
   'height': `${slideHeight.value}px`,
   'width': `${slideWidth.value}px`,
   'transform': `translate(-50%, -50%) scale(${scale.value})`,
@@ -65,32 +71,41 @@ provideLocal(injectionSlideScale, scale)
 provideLocal(injectionSlideElement, slideElement)
 
 const snapshot = computed(() => {
-  if (!props.useSnapshot || props.no == null)
+  if (props.no == null || !props.useSnapshot)
     return undefined
-  return snapshotManager.getSnapshot(props.no)
-})
-
-onMounted(() => {
-  if (container.value && props.useSnapshot && props.no != null) {
-    snapshotManager.captureSnapshot(props.no, container.value)
-  }
+  return snapshotManager.getSnapshot(props.no, isDark.value)
 })
 </script>
 
 <template>
-  <div v-if="!snapshot" :id="isMain ? 'slide-container' : undefined" ref="container" class="slidev-slide-container" :style="containerStyle">
-    <div :id="isMain ? 'slide-content' : undefined" ref="slideElement" class="slidev-slide-content" :style="contentStyle">
+  <div
+    v-if="!snapshot"
+    :id="isMain ? 'slide-container' : undefined"
+    ref="container"
+    class="slidev-slide-container"
+    :style="containerStyle"
+  >
+    <div
+      :id="isMain ? 'slide-content' : undefined"
+      ref="slideElement"
+      class="slidev-slide-content"
+      :style="contentStyle"
+    >
       <slot />
     </div>
     <slot name="controls" />
   </div>
-  <!-- Image preview -->
-  <img
-    v-else
-    :src="snapshot"
-    class="w-full object-cover"
-    :style="containerStyle"
-  >
+  <!-- Image Snapshot -->
+  <div v-else class="slidev-slide-container w-full h-full relative">
+    <img
+      :src="snapshot"
+      class="w-full h-full object-cover"
+      :style="containerStyle"
+    >
+    <div absolute bottom-1 right-1 p0.5 text-cyan:75 bg-cyan:10 rounded title="Snapshot">
+      <div class="i-carbon-camera" />
+    </div>
+  </div>
 </template>
 
 <style scoped lang="postcss">

@@ -3,8 +3,7 @@ import type { ScreenshotSession } from '../logic/screenshot'
 import { sleep } from '@antfu/utils'
 import { parseRangeString } from '@slidev/parser/utils'
 import { useHead } from '@unhead/vue'
-import { provideLocal, useElementSize, useLocalStorage, useStyleTag, watchDebounced } from '@vueuse/core'
-
+import { provideLocal, useElementSize, useStyleTag, watchDebounced } from '@vueuse/core'
 import { computed, ref, useTemplateRef, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDarkMode } from '../composables/useDarkMode'
@@ -16,8 +15,9 @@ import ExportPdfTip from '../internals/ExportPdfTip.vue'
 import FormCheckbox from '../internals/FormCheckbox.vue'
 import FormItem from '../internals/FormItem.vue'
 import PrintSlide from '../internals/PrintSlide.vue'
+import SegmentControl from '../internals/SegmentControl.vue'
 import { isScreenshotSupported, startScreenshotSession } from '../logic/screenshot'
-import { skipExportPdfTip } from '../state'
+import { captureDelay, skipExportPdfTip } from '../state'
 import Play from './play.vue'
 
 const { slides, isPrintWithClicks, hasNext, go, next, currentSlideNo, clicks, printRange } = useNav()
@@ -29,7 +29,6 @@ const scale = computed(() => containerWidth.value / slideWidth.value)
 const contentMarginBottom = computed(() => `${contentHeight.value * (scale.value - 1)}px`)
 const rangesRaw = ref('')
 const initialWait = ref(1000)
-const delay = useLocalStorage('slidev-export-capture-delay', 400, { listenToStorageChanges: false })
 type ScreenshotResult = { slideIndex: number, clickIndex: number, dataUrl: string }[]
 const screenshotSession = ref<ScreenshotSession | null>(null)
 const capturedImages = ref<ScreenshotResult | null>(null)
@@ -70,7 +69,7 @@ async function capturePngs() {
 
     go(1, 0, true)
 
-    await sleep(initialWait.value + delay.value)
+    await sleep(initialWait.value + captureDelay.value)
     while (true) {
       if (!screenshotSession.value) {
         break
@@ -81,9 +80,9 @@ async function capturePngs() {
         dataUrl: screenshotSession.value.screenshot(document.getElementById('slide-content')!),
       })
       if (hasNext.value) {
-        await sleep(delay.value)
+        await sleep(captureDelay.value)
         next()
-        await sleep(delay.value)
+        await sleep(captureDelay.value)
       }
       else {
         break
@@ -227,8 +226,15 @@ if (import.meta.hot) {
         <FormItem title="Range">
           <input v-model="rangesRaw" type="text" :placeholder="`1-${slides.length}`">
         </FormItem>
-        <FormItem title="Dark mode">
-          <FormCheckbox v-model="isDark" :disabled="isColorSchemaConfigured" />
+        <FormItem title="Color Mode">
+          <SegmentControl
+            v-model="isDark"
+            :options="[
+              { value: false, label: 'Light' },
+              { value: true, label: 'Dark' },
+            ]"
+            :disabled="isColorSchemaConfigured"
+          />
         </FormItem>
         <FormItem title="With clicks">
           <FormCheckbox v-model="isPrintWithClicks" />
@@ -238,8 +244,8 @@ if (import.meta.hot) {
       <div class="min-w-fit" flex="~ col gap-3">
         <div border="~ main rounded-lg" p3 flex="~ col gap-2">
           <h2>Export as Vector File</h2>
-          <div class="flex flex-col gap-2 items-start min-w-max">
-            <button @click="pdf">
+          <div class="flex flex-col gap-2 min-w-max">
+            <button class="slidev-form-button" @click="pdf">
               PDF
             </button>
           </div>
@@ -253,27 +259,27 @@ if (import.meta.hot) {
             If you encounter issues, please use a modern Chromium-based browser,
             or export via the CLI.
           </div>
-          <div class="flex flex-col gap-2 items-start min-w-max">
-            <button @click="pptx">
+          <div class="flex flex-col gap-2 min-w-max">
+            <button class="slidev-form-button" @click="pptx">
               PPTX
             </button>
-            <button @click="pngsGz">
+            <button class="slidev-form-button" @click="pngsGz">
               PNGs.gz
             </button>
           </div>
           <div w-full h-1px border="t main" my2 />
           <div class="relative flex flex-col gap-2 flex-nowrap">
-            <div class="flex flex-col gap-2 items-start min-w-max">
-              <button v-if="capturedImages" class="flex justify-center items-center gap-2" @click="capturedImages = null">
+            <div class="flex flex-col gap-2 min-w-max">
+              <button v-if="capturedImages" class="slidev-form-button flex justify-center items-center gap-2" @click="capturedImages = null">
                 <span class="i-carbon:trash-can inline-block text-xl" />
                 Clear Captured Images
               </button>
-              <button v-else class="flex justify-center items-center gap-2" @click="capturePngs">
-                <div class="i-carbon:camera-action inline-block text-xl" />
-                Pre-capture Slides as Images
+              <button v-else class="slidev-form-button flex justify-center items-center gap-2" @click="capturePngs">
+                <div class="i-carbon:drop-photo inline-block text-xl" />
+                Pre-capture slides as Images
               </button>
               <FormItem title="Delay" description="Delay between capturing each slide in milliseconds.<br>Increase this value if slides are captured incompletely. <br>(Not related to PDF export)">
-                <input v-model="delay" type="number" step="50" min="50">
+                <input v-model="captureDelay" type="number" step="50" min="50">
               </FormItem>
             </div>
           </div>
@@ -323,10 +329,6 @@ if (import.meta.hot) {
     transform: scale(1);
     display: block !important;
   }
-}
-
-button {
-  --uno: 'w-full rounded bg-gray:10 px-4 py-2 hover:bg-gray/20';
 }
 
 label {

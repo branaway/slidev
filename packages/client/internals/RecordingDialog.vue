@@ -2,7 +2,7 @@
 import { useVModel } from '@vueuse/core'
 import { nextTick } from 'vue'
 import { getFilename, mimeType, recordCamera, recorder, recordingName } from '../logic/recording'
-import DevicesList from './DevicesList.vue'
+import DevicesSelectors from './DevicesSelectors.vue'
 import Modal from './Modal.vue'
 
 const props = defineProps({
@@ -72,14 +72,14 @@ async function start() {
           </div>
         </div>
       </div>
-      <DevicesList />
+      <DevicesSelectors />
     </div>
     <div class="flex my-1">
-      <button class="cancel" @click="close">
+      <button class="slidev-form-button" @click="close">
         Cancel
       </button>
       <div class="flex-auto" />
-      <button @click="start">
+      <button class="slidev-form-button primary" @click="start">
         Start
       </button>
     </div>
@@ -110,16 +110,6 @@ async function start() {
 
   input[type='text'] {
     @apply border border-main rounded px-2 py-1;
-  }
-
-  button {
-    @apply bg-orange-400 text-white px-4 py-1 rounded border-b-2 border-orange-600;
-    @apply hover:(bg-orange-500 border-orange-700);
-  }
-
-  button.cancel {
-    @apply bg-gray-400 bg-opacity-50 text-white px-4 py-1 rounded border-b-2 border-main;
-    @apply hover:(bg-opacity-75 border-opacity-75);
   }
 }
 </style>

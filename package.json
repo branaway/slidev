@@ -1,8 +1,8 @@
 {
   "type": "module",
-  "version": "0.50.101",
+  "version": "51.0.101",
   "private": true,
-  "packageManager": "pnpm@9.15.0",
+  "packageManager": "pnpm@9.15.3",
   "engines": {
     "node": ">=18.0.0"
   },
