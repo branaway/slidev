@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite'
 
-const BASE = '/starter/'
+const BASE = '/composable-vue/'
 export default defineConfig({
   base: `/${BASE}/`, // Base path matching the proxy
   plugins: [],

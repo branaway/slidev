@@ -98,7 +98,8 @@ export function resolveConfig(headmatter: any, themeMeta: SlidevThemeMeta = {}, 
   if (verify)
     verifyConfig(config, themeMeta)
 
-  console.warn({ config })
+  // eslint-disable-next-line no-console
+  console.dir({ slidev_config: config })
   return config
 }
 
