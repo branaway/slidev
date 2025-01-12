@@ -29,7 +29,7 @@ shiki:
   enabled: true  # do not load the slow shiki highlighter if we don't need it
 # highlighter: bran-turnedoff
 
-base: /starter/
+# base: /starter/
 
 ---
 
