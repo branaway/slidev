@@ -255,6 +255,12 @@ export interface HeadmatterConfig extends TransitionOptions {
    * @default []
    */
   monacoRunAdditionalDeps?: string[]
+
+  /**
+   * bran: extensions
+   * the base in place of that in vite.config.ts
+   */
+  base?: string
 }
 
 export interface Frontmatter extends TransitionOptions {

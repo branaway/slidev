@@ -1,8 +1,8 @@
 import { defineConfig } from 'vite'
 
-const BASE = '/starter/'
+// const BASE = 'starter'
 export default defineConfig({
-  base: `/${BASE}/`, // Base path matching the proxy
+  // base: `/${BASE}/`, // Base path matching the proxy
   plugins: [],
   server: {
     fs: {
@@ -12,8 +12,9 @@ export default defineConfig({
         '/Users/bran/localProjects/slidev/node_modules/.pnpm/',
       ],
     },
-    hmr: {
-      path: `/${BASE}/@vite/client`, // HMR client path matching the proxy
-    },
+    // hmr:
+    // {
+    //   path: `/starter/@vite/client`, // HMR client path matching the proxy
+    // },
   },
 })

@@ -65,10 +65,17 @@ export function createConfigPlugin(options: ResolvedSlidevOptions): Plugin {
     conditions: ['import', 'module', 'browser', 'default', options.mode === 'build' ? 'production' : 'development'],
     url: pathToFileURL(options.clientRoot),
   })
+
+  // bran
+  const base = options.data.config.base || '/'
+
   return {
     name: 'slidev:config',
     async config(config) {
       const injection: UserConfig = {
+        // bran added
+        base,
+
         define: options.utils.define,
         resolve: {
           alias: [
@@ -104,7 +111,7 @@ export function createConfigPlugin(options: ResolvedSlidevOptions): Plugin {
               include: INCLUDE_GLOBAL,
             }
           : {
-              // We need to specify the full deps path for non-hoisted modules
+            // We need to specify the full deps path for non-hoisted modules
               exclude: EXCLUDE_LOCAL,
               include: INCLUDE_LOCAL,
             },
@@ -186,15 +193,27 @@ export function createConfigPlugin(options: ResolvedSlidevOptions): Plugin {
       return mergeConfig(injection, config)
     },
     configureServer(server) {
+      // bran: XXX need to acounnt for `base` in the vite config
+
       // serve our index.html after vite history fallback
       return () => {
         server.middlewares.use(async (req, res, next) => {
-          if (req.url === '/index.html') {
+          const url = req.url
+          // console.debug('bran: req.url', req.url, req.method)
+
+          if (url === '/' || url === '/index.html' || url === `${base}index.html` || url === base) {
             res.setHeader('Content-Type', 'text/html')
             res.statusCode = 200
-            res.end(options.utils.indexHtml)
-            return
+            return res.end(options.utils.indexHtml)
           }
+
+          // bran: my attempt to fix the base path issue
+          // if (base && base !== '/') {
+          //   if (!req.url?.startsWith(base)) {
+          //     req.url = (base + req.url).replace('//', '/')
+          //   }
+          // }
+
           next()
         })
       }

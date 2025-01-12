@@ -24,6 +24,13 @@ mdc: true
 browserExporter: false
 editor: true
 
+# bran: 扩展
+shiki:
+  enabled: true  # do not load the slow shiki highlighter if we don't need it
+# highlighter: bran-turnedoff
+
+base: /starter/
+
 ---
 
 # Welcome to Slidev

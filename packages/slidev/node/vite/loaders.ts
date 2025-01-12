@@ -87,6 +87,8 @@ export function createSlidesLoader(
       updateServerWatcher()
 
       server.middlewares.use(async (req, res, next) => {
+        // console.debug('bran: req.url in sidev::loader', req.url)
+
         const match = req.url?.match(regexSlideReqPath)
         if (!match)
           return next()

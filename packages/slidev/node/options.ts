@@ -80,10 +80,27 @@ export async function createDataUtils(resolved: Omit<ResolvedSlidevOptions, 'uti
   let _layouts_cache_time = 0
   let _layouts_cache: Record<string, string> = {}
 
+  // bran
+  // console.debug('resolved config', resolved.data.config)
+  const shikiEnabled = (resolved.data.config as any).shiki?.enabled ?? true
+
+  // console.debug('[slidev] setup shiki')
+  const shiki = shikiEnabled ? (await setupShiki(resolved.roots)) : { shiki: undefined, shikiOptions: undefined }
+  // console.debug({shiki})
+  //     shiki,
+  //  shikiOptions: mergedOptions,
+
+  // eslint-disable-next-line no-console
+  console.debug('[slidev] setup indexHtml')
+  const indexHtml = setupIndexHtml(resolved)
+  // eslint-disable-next-line no-console
+  console.debug('[slidev] setup define')
+  const define = getDefine(resolved)
   return {
-    ...await setupShiki(resolved.roots),
-    indexHtml: setupIndexHtml(resolved),
-    define: getDefine(resolved),
+    shiki: shiki.shiki as any,
+    shikiOptions: shiki.shikiOptions,
+    indexHtml,
+    define,
     iconsResolvePath: [resolved.clientRoot, ...resolved.roots].reverse(),
     isMonacoTypesIgnored: pkg => monacoTypesIgnorePackagesMatches.some(i => i(pkg)),
     getLayouts: () => {

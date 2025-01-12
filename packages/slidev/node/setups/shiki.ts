@@ -50,6 +50,7 @@ export default async function setupShiki(roots: string[]) {
   if (mergedOptions.themes)
     mergedOptions.defaultColor = false
 
+  console.warn(`[setupShiki] createHighlighter`)
   const shiki = await createHighlighter({
     ...mergedOptions,
     langs: mergedOptions.langs ?? Object.keys(bundledLanguages),

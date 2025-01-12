@@ -159,11 +159,6 @@ in `indexHtml.ts`
 - one of the examplar talk:  https://talks.gureckislab.org/public/2024/2024-07-26_cogsci_social_traps/#/presenter/7, with great presentror script.
 - 
 
-
-## default config
-
-- see packages/parser/src/config.ts
-
 ## built-in vite config:
 
 packages/slidev/node/vite/extendConfig.ts
@@ -177,3 +172,11 @@ packages/slidev/node/vite/extendConfig.ts
 ## default config
 
 - see `packages/parser/src/config.ts`
+
+## vite config
+
+- see `packages/slidev/node/vite/extendConfig.ts`
+
+## the main entrance
+
+- see `packages/client/index.html`, which is further processed by `packages/slidev/node/setups/indexHtml.ts`

@@ -55,8 +55,12 @@ export default function setupIndexHtml({ mode, entry, clientRoot, userRoot, root
   if (data.headmatter.lang)
     main = main.replace('<html lang="en">', `<html lang="${data.headmatter.lang}">`)
 
+  let base = data.config.base
+  if (base.endsWith('/'))
+    base = base.slice(0, -1)
+
   main = main
-    .replace('__ENTRY__', toAtFS(join(clientRoot, 'main.ts')))
+    .replace('__ENTRY__', base + toAtFS(join(clientRoot, 'main.ts')))
     .replace('<!-- head -->', head)
     .replace('<!-- body -->', body)
 

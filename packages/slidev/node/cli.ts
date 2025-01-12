@@ -126,6 +126,8 @@ cli.command(
     async function initServer() {
       if (server)
         await server.close()
+
+      echo(`>>> resolve options for ${entry}`)
       const options = await resolveOptions({ entry, remote, theme, inspect }, 'dev')
       const host = remote !== undefined ? bind : 'localhost'
       port = userPort || await getPort({
@@ -134,6 +136,8 @@ cli.command(
         portRange: [3030, 4000],
         host,
       })
+
+      echo('>>> create server')
       server = (await createServer(
         options,
         {
@@ -291,9 +295,12 @@ cli.command(
       })
     }
 
+    echo(`>>> init server`)
     initServer()
+    echo(`>>> bind shortcut`)
     bindShortcut()
 
+    echo(`>>> start watching`)
     // Start watcher to restart server on file changes
     const { watch } = await import('chokidar')
     const watcher = watch([
@@ -684,4 +691,8 @@ function printInfo(
 
     return lastRemoteUrl
   }
+}
+
+function echo(...arg0: any[]) {
+  console.warn(...arg0)
 }

@@ -126,7 +126,7 @@ if (props.resize) {
 
 <template>
   <div
-    class="shadow bg-main p-2  grid grid-rows-[max-content_1fr] h-full overflow-hidden"
+    class="shadow bg-main p-0  grid grid-rows-[max-content_1fr] h-full overflow-hidden"
     :class="resize ? 'border-l border-gray-400 border-opacity-20' : ''"
     :style="resize ? {
       height: vertical ? `${editorHeight}px` : undefined,
@@ -153,11 +153,11 @@ if (props.resize) {
         </div>
       </div>
       <div class="editor-header-controls">
-        <IconButton v-if="resize" title="贴在右边" @click="vertical = false">
-          <div class="i-carbon:open-panel-right" />
-        </IconButton>
-        <IconButton v-else title="贴在底部" @click="vertical = true">
-          <div class="i-carbon:open-panel-bottom" />
+        <IconButton
+          :title="vertical ? '贴在右边' : '贴在底部'"
+          @click="vertical = !vertical"
+        >
+          <div :class="vertical ? 'i-carbon:open-panel-right' : 'i-carbon:open-panel-bottom'" />
         </IconButton>
         <IconButton title="用编辑器打开" @click="openInEditor()">
           <div class="i-carbon:launch" />

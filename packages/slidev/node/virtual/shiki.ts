@@ -6,6 +6,10 @@ import { resolveImportUrl } from '../resolver'
 export const templateShiki: VirtualModuleTemplate = {
   id: '/@slidev/shiki',
   getContent: async ({ utils }) => {
+    // bran
+    if (!utils.shiki || !utils.shikiOptions)
+      return ''
+
     const options = utils.shikiOptions
     const langs = await resolveLangs(options.langs || ['markdown', 'vue', 'javascript', 'typescript', 'html', 'css'])
     const resolvedThemeOptions = 'themes' in options
