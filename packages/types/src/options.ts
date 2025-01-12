@@ -35,6 +35,13 @@ export interface SlidevEntryOptions {
    * Build with --download option
    */
   download?: boolean
+
+  /**
+   * pass vite config properties from commandline. `base` for now, e.g. `--base /foo/` -- bran
+   */
+  viteConfig: {
+    base: string
+  }
 }
 
 export interface ResolvedSlidevOptions extends RootsInfo, SlidevEntryOptions {

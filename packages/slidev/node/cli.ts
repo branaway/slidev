@@ -106,9 +106,13 @@ cli.command(
       default: '0.0.0.0',
       describe: 'specify which IP addresses the server should listen on in remote mode',
     })
+    .option('base', { // borrowed from build command -- bran
+      type: 'string',
+      describe: 'the base for the access url, example: /foo/, as in the `base` property in vite config',
+    })
     .strict()
     .help(),
-  async ({ entry, theme, port: userPort, open, log, remote, tunnel, force, inspect, bind }) => {
+  async ({ entry, theme, port: userPort, open, log, remote, tunnel, force, inspect, bind, base }) => {
     let server: ViteDevServer | undefined
     let port = 3030
 
@@ -128,7 +132,9 @@ cli.command(
         await server.close()
 
       echo(`>>> resolve options for ${entry}`)
-      const options = await resolveOptions({ entry, remote, theme, inspect }, 'dev')
+      const options = await resolveOptions({ entry, remote, theme, inspect, viteConfig: { base: base || '/' } }, 'dev')
+      options.data.config.base = base || options.data.config.base
+
       const host = remote !== undefined ? bind : 'localhost'
       port = userPort || await getPort({
         port: 3030,
@@ -649,15 +655,18 @@ function printInfo(
     const presenterPath = `${options.data.config.routerMode === 'hash' ? '/#/' : '/'}presenter/${query}`
     const entryPath = `${options.data.config.routerMode === 'hash' ? '/#/' : '/'}entry${query}/`
     const overviewPath = `${options.data.config.routerMode === 'hash' ? '/#/' : '/'}overview${query}/`
+    let base = options.data.config.base || ''
+    base = base.replaceAll('/', '')
+
     console.log()
-    console.log(`${dim('  public slide show ')}  > ${cyan(`http://localhost:${bold(port)}/`)}`)
+    console.log(`${dim('  public slide show ')}  > ${cyan(`http://localhost:${bold(port)}/${base}/`)}`)
     if (query)
-      console.log(`${dim('  private slide show ')} > ${cyan(`http://localhost:${bold(port)}/${query}`)}`)
+      console.log(`${dim('  private slide show ')} > ${cyan(`http://localhost:${bold(port)}/${base}/${query}`)}`)
     if (options.utils.define.__SLIDEV_FEATURE_PRESENTER__)
-      console.log(`${dim('  presenter mode ')}     > ${blue(`http://localhost:${bold(port)}${presenterPath}`)}`)
-    console.log(`${dim('  slides overview ')}    > ${blue(`http://localhost:${bold(port)}${overviewPath}`)}`)
+      console.log(`${dim('  presenter mode ')}     > ${blue(`http://localhost:${bold(port)}/${base}${presenterPath}`)}`)
+    console.log(`${dim('  slides overview ')}    > ${blue(`http://localhost:${bold(port)}/${base}${overviewPath}`)}`)
     if (options.utils.define.__SLIDEV_FEATURE_BROWSER_EXPORTER__)
-      console.log(`${dim('  export slides')}       > ${blue(`http://localhost:${bold(port)}/export/`)}`)
+      console.log(`${dim('  export slides(not yet)')}       > ${blue(`http://localhost:${bold(port)}/${base}/export/`)}`)
     if (options.inspect)
       console.log(`${dim('  vite inspector')}      > ${yellow(`http://localhost:${bold(port)}/__inspect/`)}`)
 

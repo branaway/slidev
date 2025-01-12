@@ -28,6 +28,9 @@ export async function resolveOptions(
   const themeRoots = themeRoot ? [themeRoot] : []
   const themeMeta = themeRoot ? await getThemeMeta(theme, themeRoot) : undefined
 
+  // bran hack
+  loaded.headmatter.base = entryOptions.viteConfig.base
+
   const config = parser.resolveConfig(loaded.headmatter, themeMeta, entryOptions.entry)
   const addonRoots = await resolveAddons(config.addons)
   const roots = uniq([...themeRoots, ...addonRoots, rootsInfo.userRoot])

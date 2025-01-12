@@ -100,7 +100,7 @@ transition: slide-down
 level: 2
 ---
 
-# Navigation
+# Navigations
 
 Hover on the bottom-left corner to see the navigation's controls panel, [learn more](https://sli.dev/guide/ui#navigation-bar)
 
