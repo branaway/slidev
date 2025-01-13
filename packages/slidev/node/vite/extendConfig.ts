@@ -67,11 +67,26 @@ export function createConfigPlugin(options: ResolvedSlidevOptions): Plugin {
   })
 
   // bran
-  const base = options.data.config.base || '/'
+  const base = options.data.config.viteConfig.base || '/'
 
   return {
     name: 'slidev:config',
     async config(config) {
+      const allowedFileAccess = [
+        options.userWorkspaceRoot,
+        options.clientRoot,
+        // Special case for PNPM global installation
+        isInstalledGlobally.value
+          ? slash(options.cliRoot).replace(/\/\.pnpm\/.*$/gi, '')
+          : options.cliRoot,
+        ...options.roots,
+        // bran
+        ...(options.data.config.viteConfig.server?.fs?.allow || []),
+      ]
+
+      // eslint-disable-next-line no-console
+      console.debug('bran: allowedFileAccess', allowedFileAccess)
+
       const injection: UserConfig = {
         // bran added
         base,
@@ -125,15 +140,7 @@ export function createConfigPlugin(options: ResolvedSlidevOptions): Plugin {
         server: {
           fs: {
             strict: true,
-            allow: uniq([
-              options.userWorkspaceRoot,
-              options.clientRoot,
-              // Special case for PNPM global installation
-              isInstalledGlobally.value
-                ? slash(options.cliRoot).replace(/\/\.pnpm\/.*$/gi, '')
-                : options.cliRoot,
-              ...options.roots,
-            ]),
+            allow: uniq(allowedFileAccess),
           },
         },
         publicDir: join(options.userRoot, 'public'),

@@ -110,9 +110,14 @@ cli.command(
       type: 'string',
       describe: 'the base for the access url, example: /foo/, as in the `base` property in vite config',
     })
+    .option('viteFsAllow', { // -- bran
+      type: 'array',
+      string: true, // This ensures all array elements are strings
+      describe: 'list of additional paths to allow file serving from, can specify multiple paths separated by space',
+    })
     .strict()
     .help(),
-  async ({ entry, theme, port: userPort, open, log, remote, tunnel, force, inspect, bind, base }) => {
+  async ({ entry, theme, port: userPort, open, log, remote, tunnel, force, inspect, bind, base, viteFsAllow }) => {
     let server: ViteDevServer | undefined
     let port = 3030
 
@@ -128,12 +133,35 @@ cli.command(
     }
 
     async function initServer() {
-      if (server)
+      if (server) {
+        echo(`>>> found previous server. close it...`)
         await server.close()
+      }
 
       echo(`>>> resolve options for ${entry}`)
-      const options = await resolveOptions({ entry, remote, theme, inspect, viteConfig: { base: base || '/' } }, 'dev')
-      options.data.config.base = base || options.data.config.base
+
+      const viteConfig = {
+        base: base || '/',
+        server: {
+          fs: {
+            allow: !viteFsAllow
+              ? []
+              : (typeof viteFsAllow == 'string')
+                  ? [viteFsAllow]
+                  : viteFsAllow,
+          },
+        },
+      }
+
+      const options = await resolveOptions({
+        entry,
+        remote,
+        theme,
+        inspect,
+        viteConfig,
+      }, 'dev')
+
+      options.data.config.viteConfig = viteConfig
 
       const host = remote !== undefined ? bind : 'localhost'
       port = userPort || await getPort({
@@ -302,7 +330,7 @@ cli.command(
     }
 
     echo(`>>> init server`)
-    initServer()
+    await initServer()
     echo(`>>> bind shortcut`)
     bindShortcut()
 
@@ -366,7 +394,7 @@ cli.command(
     const { build } = await import('./commands/build')
 
     for (const entryFile of entry as unknown as string[]) {
-      const options = await resolveOptions({ entry: entryFile, theme, inspect, download }, 'build')
+      const options = await resolveOptions({ entry: entryFile, theme, inspect, download, viteConfig: ({} as any) }, 'build')
 
       printInfo(options)
       await build(
@@ -655,7 +683,7 @@ function printInfo(
     const presenterPath = `${options.data.config.routerMode === 'hash' ? '/#/' : '/'}presenter/${query}`
     const entryPath = `${options.data.config.routerMode === 'hash' ? '/#/' : '/'}entry${query}/`
     const overviewPath = `${options.data.config.routerMode === 'hash' ? '/#/' : '/'}overview${query}/`
-    let base = options.data.config.base || ''
+    let base = options.data.config.viteConfig.base || ''
     base = base.replaceAll('/', '')
 
     console.log()

@@ -27,10 +27,9 @@ export async function createServer(
     serverOptions,
   )
 
-  // eslint-disable-next-line no-console
-  console.log('inlineConfig for vite')
-  // eslint-disable-next-line no-console
-  console.dir(inlineConfig)
+  // console.log('inlineConfig for vite')
+
+  // console.dir(inlineConfig)
 
   const server = await createViteServer(inlineConfig)
   // eslint-disable-next-line no-console

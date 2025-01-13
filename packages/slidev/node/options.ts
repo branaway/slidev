@@ -57,6 +57,9 @@ export async function resolveOptions(
     themeMeta,
   }
 
+  // bran
+  data.config.viteConfig = entryOptions.viteConfig
+
   const resolved: Omit<ResolvedSlidevOptions, 'utils'> = {
     ...rootsInfo,
     ...entryOptions,

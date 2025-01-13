@@ -55,7 +55,7 @@ export default function setupIndexHtml({ mode, entry, clientRoot, userRoot, root
   if (data.headmatter.lang)
     main = main.replace('<html lang="en">', `<html lang="${data.headmatter.lang}">`)
 
-  let base = data.config.base || '/'
+  let base = data.config.viteConfig.base || '/'
   if (base.endsWith('/'))
     base = base.slice(0, -1)
 

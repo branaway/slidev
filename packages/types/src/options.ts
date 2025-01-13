@@ -41,6 +41,11 @@ export interface SlidevEntryOptions {
    */
   viteConfig: {
     base: string
+    server: {
+      fs: {
+        allow: string[]
+      }
+    }
   }
 }
 

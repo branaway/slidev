@@ -258,9 +258,16 @@ export interface HeadmatterConfig extends TransitionOptions {
 
   /**
    * bran: extensions
-   * the base in place of that in vite.config.ts
+   * per vite.config.ts
    */
-  base?: string
+  viteConfig: {
+    base?: string
+    server?: {
+      fs?: {
+        allow?: string[]
+      }
+    }
+  }
 }
 
 export interface Frontmatter extends TransitionOptions {
