@@ -39,11 +39,11 @@ export interface SlidevEntryOptions {
   /**
    * pass vite config properties from commandline. `base` for now, e.g. `--base /foo/` -- bran
    */
-  viteConfig: {
-    base: string
-    server: {
-      fs: {
-        allow: string[]
+  viteConfig?: {
+    base?: string
+    server?: {
+      fs?: {
+        allow?: string[]
       }
     }
   }

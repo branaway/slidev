@@ -260,7 +260,7 @@ export interface HeadmatterConfig extends TransitionOptions {
    * bran: extensions
    * per vite.config.ts
    */
-  viteConfig: {
+  viteConfig?: {
     base?: string
     server?: {
       fs?: {

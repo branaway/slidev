@@ -4,6 +4,7 @@ import type { Plugin, ViteDevServer } from 'vite'
 import { notNullish, range } from '@antfu/utils'
 import * as parser from '@slidev/parser/fs'
 import equal from 'fast-deep-equal'
+import { diff } from 'jest-diff'
 import YAML from 'yaml'
 import { sharedMd } from '../commands/shared'
 import { createDataUtils } from '../options'
@@ -89,7 +90,14 @@ export function createSlidesLoader(
       server.middlewares.use(async (req, res, next) => {
         // console.debug('bran: req.url in sidev::loader', req.url)
 
-        const match = req.url?.match(regexSlideReqPath)
+        const base = options.viteConfig?.base
+
+        // bran: must consider the base of the url
+        let url = req.url || '/'
+        if (base && base.length > 1 && url.startsWith(base))
+          url = url.slice(base.length - 1) // leaving the rest to start with a '/'
+
+        const match = url.match(regexSlideReqPath)
         if (!match)
           return next()
 
@@ -167,6 +175,9 @@ export function createSlidesLoader(
       if (!newData)
         return []
 
+      // bran
+      newData.config.viteConfig = options.viteConfig as any
+
       if (skipHmr && newData.markdownFiles[skipHmr.filePath]?.raw === skipHmr.fileContent) {
         skipHmr = null
         return []
@@ -195,8 +206,11 @@ export function createSlidesLoader(
         range(data.slides.length).map(i => hmrSlidesIndexes.add(i))
       }
 
-      if (!equal(data.config, newData.config))
+      if (!equal(data.config, newData.config)) {
+        // eslint-disable-next-line no-console
+        console.debug(`what's the diff bwtween the newData and old data: `, diff(data.config, newData.config))
         moduleIds.add(templateConfigs.id)
+      }
 
       if (!equal(data.features, newData.features)) {
         setTimeout(() => {
@@ -240,6 +254,7 @@ export function createSlidesLoader(
       }
 
       Object.assign(data, newData)
+
       Object.assign(utils, createDataUtils(options))
 
       if (hmrSlidesIndexes.size > 0)

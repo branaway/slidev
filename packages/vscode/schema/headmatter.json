@@ -487,12 +487,41 @@
           "markdownDescription": "Additional local modules to load as dependencies of monaco runnable",
           "default": []
         },
+        "viteConfig": {
+          "type": "object",
+          "properties": {
+            "base": {
+              "type": "string"
+            },
+            "server": {
+              "type": "object",
+              "properties": {
+                "fs": {
+                  "type": "object",
+                  "properties": {
+                    "allow": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "description": "bran: extensions per vite.config.ts",
+          "markdownDescription": "bran: extensions\nper vite.config.ts"
+        },
         "defaults": {
           "$ref": "#/definitions/Frontmatter",
           "description": "Default frontmatter options applied to all slides",
           "markdownDescription": "Default frontmatter options applied to all slides"
         }
-      }
+      },
+      "required": [
+        "viteConfig"
+      ]
     },
     "BuiltinSlideTransition": {
       "type": "string",

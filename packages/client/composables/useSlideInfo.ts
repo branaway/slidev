@@ -17,7 +17,9 @@ export function useSlideInfo(no: number): UseSlideInfo {
       update: async () => {},
     }
   }
-  const url = `/__slidev/slides/${no}.json`
+
+  // bran: the dot slash is necessary for relative path
+  const url = `./__slidev/slides/${no}.json`
   // if (__DEV__) console.log(`[slidev] Fetching slide ${no} from ${url}`)
   const { data: info, execute } = useFetch(url).json<SlideInfo>().get()
 

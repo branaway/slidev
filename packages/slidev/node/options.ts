@@ -29,7 +29,7 @@ export async function resolveOptions(
   const themeMeta = themeRoot ? await getThemeMeta(theme, themeRoot) : undefined
 
   // bran hack
-  loaded.headmatter.base = entryOptions.viteConfig.base
+  // loaded.headmatter.base = entryOptions.viteConfig?.base || '/'
 
   const config = parser.resolveConfig(loaded.headmatter, themeMeta, entryOptions.entry)
   const addonRoots = await resolveAddons(config.addons)
@@ -58,7 +58,7 @@ export async function resolveOptions(
   }
 
   // bran
-  data.config.viteConfig = entryOptions.viteConfig
+  data.config.viteConfig = entryOptions.viteConfig as any
 
   const resolved: Omit<ResolvedSlidevOptions, 'utils'> = {
     ...rootsInfo,
@@ -96,11 +96,10 @@ export async function createDataUtils(resolved: Omit<ResolvedSlidevOptions, 'uti
   //     shiki,
   //  shikiOptions: mergedOptions,
 
-  // eslint-disable-next-line no-console
-  console.debug('[slidev] setup indexHtml')
+  // console.debug('[slidev] setup indexHtml')
   const indexHtml = setupIndexHtml(resolved)
-  // eslint-disable-next-line no-console
-  console.debug('[slidev] setup define')
+
+  // console.debug('[slidev] setup define')
   const define = getDefine(resolved)
   return {
     shiki: shiki.shiki as any,
@@ -153,8 +152,8 @@ function getDefine(options: Omit<ResolvedSlidevOptions, 'utils'>): Record<string
     __SLIDEV_FEATURE_WAKE_LOCK__: matchMode(options.data.config.wakeLock),
     __SLIDEV_HAS_SERVER__: options.mode !== 'build',
   }
-  // eslint-disable-next-line no-console
-  console.debug('[slidev] define', features)
+
+  // console.debug('[slidev] define', features)
   return objectMap(
     features,
     (v, k) => [v, JSON.stringify(k)],

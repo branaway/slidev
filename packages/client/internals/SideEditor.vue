@@ -126,7 +126,7 @@ if (props.resize) {
 
 <template>
   <div
-    class="shadow bg-main p-0  grid grid-rows-[max-content_1fr] h-full overflow-hidden"
+    class="shadow bg-main p-0 grid grid-rows-[max-content_1fr] h-full overflow-hidden text-sm"
     :class="resize ? 'border-l border-gray-400 border-opacity-20' : ''"
     :style="resize ? {
       height: vertical ? `${editorHeight}px` : undefined,
@@ -204,16 +204,18 @@ if (props.resize) {
   align-items: center;
   gap: 0px;
   flex-grow: 1;
+  font-size: small;
 }
 
 .editor-tab {
   display: flex;
   align-items: center;
-  padding: 8px 8px;
+  padding: 6px 6px;
   border-radius: 6px 6px 0 0;
   cursor: pointer;
   background-color: var(--tab-background, #fff);
   /* transition: background-color 0.2s, color 0.2s; */
+  font-size: small;
 }
 
 .editor-tab:hover {

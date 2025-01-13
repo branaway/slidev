@@ -84,8 +84,7 @@ export function createConfigPlugin(options: ResolvedSlidevOptions): Plugin {
         ...(options.data.config.viteConfig.server?.fs?.allow || []),
       ]
 
-      // eslint-disable-next-line no-console
-      console.debug('bran: allowedFileAccess', allowedFileAccess)
+      // console.debug('bran: allowedFileAccess', allowedFileAccess)
 
       const injection: UserConfig = {
         // bran added

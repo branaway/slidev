@@ -83,6 +83,7 @@ if (__DEV__ && __SLIDEV_FEATURE_EDITOR__)
 // })
 
 function startDragging(event: MouseEvent) {
+  event.preventDefault()
   const startPos = isEditorVertical.value ? event.clientY : event.clientX
   const startSize = isEditorVertical.value ? editorHeight.value : editorWidth.value
 

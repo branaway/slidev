@@ -331,7 +331,7 @@ cli.command(
 
     echo(`>>> init server`)
     await initServer()
-    echo(`>>> bind shortcut`)
+    // echo(`>>> bind shortcut`)
     bindShortcut()
 
     echo(`>>> start watching`)
@@ -683,18 +683,17 @@ function printInfo(
     const presenterPath = `${options.data.config.routerMode === 'hash' ? '/#/' : '/'}presenter/${query}`
     const entryPath = `${options.data.config.routerMode === 'hash' ? '/#/' : '/'}entry${query}/`
     const overviewPath = `${options.data.config.routerMode === 'hash' ? '/#/' : '/'}overview${query}/`
-    let base = options.data.config.viteConfig.base || ''
-    base = base.replaceAll('/', '')
+    const base = options.data.config.viteConfig.base || '/'
 
     console.log()
-    console.log(`${dim('  public slide show ')}  > ${cyan(`http://localhost:${bold(port)}/${base}/`)}`)
+    console.log(`${dim('  public slide show ')}  > ${cyan(`http://localhost:${bold(port)}${base}`)}`)
     if (query)
-      console.log(`${dim('  private slide show ')} > ${cyan(`http://localhost:${bold(port)}/${base}/${query}`)}`)
+      console.log(`${dim('  private slide show ')} > ${cyan(`http://localhost:${bold(port)}${base}${query}`)}`)
     if (options.utils.define.__SLIDEV_FEATURE_PRESENTER__)
-      console.log(`${dim('  presenter mode ')}     > ${blue(`http://localhost:${bold(port)}/${base}${presenterPath}`)}`)
-    console.log(`${dim('  slides overview ')}    > ${blue(`http://localhost:${bold(port)}/${base}${overviewPath}`)}`)
+      console.log(`${dim('  presenter mode ')}     > ${blue(`http://localhost:${bold(port)}${base}${presenterPath}`.replaceAll('//', '/'))}`)
+    console.log(`${dim('  slides overview ')}    > ${blue(`http://localhost:${bold(port)}${base}${overviewPath}`.replaceAll('//', '/'))}`)
     if (options.utils.define.__SLIDEV_FEATURE_BROWSER_EXPORTER__)
-      console.log(`${dim('  export slides(not yet)')}       > ${blue(`http://localhost:${bold(port)}/${base}/export/`)}`)
+      console.log(`${dim('  export slides(not yet)')}       > ${blue(`http://localhost:${bold(port)}${base}export/`)}`)
     if (options.inspect)
       console.log(`${dim('  vite inspector')}      > ${yellow(`http://localhost:${bold(port)}/__inspect/`)}`)
 

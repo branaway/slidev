@@ -180,3 +180,19 @@ packages/slidev/node/vite/extendConfig.ts
 ## the main entrance
 
 - see `packages/client/index.html`, which is further processed by `packages/slidev/node/setups/indexHtml.ts`
+
+## need to cover all fetch request from client to repect base
+
+```sh
+::>> POST /@server-reactive/nav
+::>> GET /__slidev/slides/2.json
+::>> GET /__slidev/slides/2.json
+::>> POST /__slidev/slides/2.json
+::>> POST /@server-reactive/nav
+::>> GET /__slidev/slides/2.json
+::>> GET /__open-in-editor?file=%2FUsers%2Fbran%2FlocalProjects%2FSlides%2Fpresentations%2Fbar%2Fslides.md%3A24
+::>> POST /__slidev/slides/2.json
+::>> POST /@server-reactive/nav
+::>> GET /__slidev/slides/2.json
+::>> GET /__slidev/slides/2.json
+```
