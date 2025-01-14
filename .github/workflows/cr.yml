@@ -18,7 +18,7 @@ jobs:
           node-version: lts/*
 
       - run: npm i -g @antfu/ni
-      - run: pnpm install --no-frozen-lockfile
+      - run: nci
 
       - name: Build
         run: nr build
