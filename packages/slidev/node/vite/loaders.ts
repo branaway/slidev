@@ -4,7 +4,7 @@ import type { Plugin, ViteDevServer } from 'vite'
 import { notNullish, range } from '@antfu/utils'
 import * as parser from '@slidev/parser/fs'
 import equal from 'fast-deep-equal'
-import { diff } from 'jest-diff'
+// import { diff } from 'jest-diff'
 import YAML from 'yaml'
 import { sharedMd } from '../commands/shared'
 import { createDataUtils } from '../options'
@@ -207,8 +207,7 @@ export function createSlidesLoader(
       }
 
       if (!equal(data.config, newData.config)) {
-        // eslint-disable-next-line no-console
-        console.debug(`what's the diff bwtween the newData and old data: `, diff(data.config, newData.config))
+        // console.debug(`what's the diff bwtween the newData and old data: `, diff(data.config, newData.config))
         moduleIds.add(templateConfigs.id)
       }
 
