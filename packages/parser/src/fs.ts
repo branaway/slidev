@@ -139,7 +139,7 @@ export async function load(userRoot: string, filepath: string, loadedSource: Rec
   }
 }
 
-export async function save(markdown: SlidevMarkdown) {
+export function save(markdown: SlidevMarkdown) {
   const fileContent = stringify(markdown)
   fs.writeFileSync(markdown.filepath, fileContent, 'utf-8')
   return fileContent

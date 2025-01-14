@@ -134,7 +134,7 @@ export function createSlidesLoader(
             updateFrontmatterPatch(slide, body.frontmatter)
 
           parser.prettifySlide(slide.source)
-          const fileContent = await parser.save(data.markdownFiles[slide.source.filepath])
+          const fileContent = parser.save(data.markdownFiles[slide.source.filepath])
           if (body.skipHmr) {
             skipHmr = {
               filePath: slide.source.filepath,
@@ -151,8 +151,10 @@ export function createSlidesLoader(
           }
 
           res.statusCode = 200
+          res.setHeader('Content-Type', 'application/json')
           res.write(JSON.stringify(withRenderedNote(slide)))
-          return res.end()
+          res.end()
+          return
         }
 
         next()
