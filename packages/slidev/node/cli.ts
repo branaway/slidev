@@ -109,6 +109,7 @@ cli.command(
     .option('base', { // borrowed from build command -- bran
       type: 'string',
       describe: 'the base for the access url, example: /foo/, as in the `base` property in vite config',
+      default: '/',
     })
     .option('viteFsAllow', { // -- bran
       type: 'array',
@@ -118,6 +119,7 @@ cli.command(
     .strict()
     .help(),
   async ({ entry, theme, port: userPort, open, log, remote, tunnel, force, inspect, bind, base, viteFsAllow }) => {
+    base = base ? `/${base.replace(/^\/|\/$/, '')}/` : '/'
     let server: ViteDevServer | undefined
     let port = 3030
 
