@@ -119,7 +119,7 @@ cli.command(
     .strict()
     .help(),
   async ({ entry, theme, port: userPort, open, log, remote, tunnel, force, inspect, bind, base, viteFsAllow }) => {
-    base = base ? `/${base.replace(/^\/|\/$/, '')}/` : '/'
+    base = base ? `/${base.replace(/^\/|\/$/g, '')}/` : '/'
     let server: ViteDevServer | undefined
     let port = 3030
 
