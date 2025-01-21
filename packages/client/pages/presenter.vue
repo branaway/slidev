@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useHead } from '@unhead/vue'
-import { useLocalStorage, useMouse, useWindowFocus } from '@vueuse/core'
+import { useMouse, useWindowFocus } from '@vueuse/core'
 import { computed, onMounted, reactive, ref, shallowRef, watch } from 'vue'
 import { createFixedClicks } from '../composables/useClicks'
 import { useDrawings } from '../composables/useDrawings'
@@ -25,7 +25,7 @@ import SlidesShow from '../internals/SlidesShow.vue'
 import SlideWrapper from '../internals/SlideWrapper.vue'
 import { onContextMenu } from '../logic/contextMenu'
 import { registerShortcuts } from '../logic/shortcuts'
-import { decreasePresenterFontSize, increasePresenterFontSize, presenterLayout, presenterNotesFontSize, showEditor, showPresenterCursor } from '../state'
+import { decreasePresenterFontSize, increasePresenterFontSize, presenterLayout, presenterNotesFontSize, showEditor, showPresenterCursor, useLocalStorageWithBase } from '../state'
 import { sharedState } from '../state/shared'
 
 const inFocus = useWindowFocus()
@@ -77,7 +77,7 @@ watch(
   { immediate: true },
 )
 
-const mainSlideMode = useLocalStorage<'slides' | 'mirror'>('slidev-presenter-main-slide-mode', 'slides')
+const mainSlideMode = useLocalStorageWithBase<'slides' | 'mirror'>('slidev-presenter-main-slide-mode', 'slides')
 const SideEditor = shallowRef<any>()
 if (__DEV__ && __SLIDEV_FEATURE_EDITOR__)
   import('../internals/SideEditor.vue').then(v => SideEditor.value = v.default)

@@ -1,7 +1,7 @@
 import type { DragElementState } from '../composables/useDragElements'
-import { breakpointsTailwind, isClient, useActiveElement, useBreakpoints, useFullscreen, useLocalStorage, useMagicKeys, useToggle, useWindowSize } from '@vueuse/core'
+import { useLocalStorage as baseUseLocalStorage, breakpointsTailwind, isClient, useActiveElement, useBreakpoints, useFullscreen, useMagicKeys, useToggle, useWindowSize } from '@vueuse/core'
 import { computed, ref, shallowRef } from 'vue'
-import { slideAspect } from '../env'
+import { AppConfig, slideAspect } from '../env'
 
 export const showRecordingDialog = ref(false)
 export const showInfoDialog = ref(false)
@@ -29,24 +29,24 @@ export const activeElement = useActiveElement()
 export const isInputting = computed(() => ['INPUT', 'TEXTAREA'].includes(activeElement.value?.tagName || ''))
 export const isOnFocus = computed(() => ['BUTTON', 'A'].includes(activeElement.value?.tagName || ''))
 
-export const currentCamera = useLocalStorage<string>('slidev-camera', 'default', { listenToStorageChanges: false })
-export const currentMic = useLocalStorage<string>('slidev-mic', 'default', { listenToStorageChanges: false })
-export const slideScale = useLocalStorage<number>('slidev-scale', 0)
-export const wakeLockEnabled = useLocalStorage('slidev-wake-lock', true)
-export const hideCursorIdle = useLocalStorage('slidev-hide-cursor-idle', true)
-export const skipExportPdfTip = useLocalStorage('slidev-skip-export-pdf-tip', false)
-export const captureDelay = useLocalStorage('slidev-export-capture-delay', 400, { listenToStorageChanges: false })
+export const currentCamera = useLocalStorageWithBase<string>('slidev-camera', 'default', { listenToStorageChanges: false })
+export const currentMic = useLocalStorageWithBase<string>('slidev-mic', 'default', { listenToStorageChanges: false })
+export const slideScale = useLocalStorageWithBase<number>('slidev-scale', 0)
+export const wakeLockEnabled = useLocalStorageWithBase('slidev-wake-lock', true)
+export const hideCursorIdle = useLocalStorageWithBase('slidev-hide-cursor-idle', true)
+export const skipExportPdfTip = useLocalStorageWithBase('slidev-skip-export-pdf-tip', false)
+export const captureDelay = useLocalStorageWithBase('slidev-export-capture-delay', 400, { listenToStorageChanges: false })
 
-export const showPresenterCursor = useLocalStorage('slidev-presenter-cursor', true, { listenToStorageChanges: false })
-export const showEditor = useLocalStorage('slidev-show-editor', false, { listenToStorageChanges: false })
-export const isEditorVertical = useLocalStorage('slidev-editor-vertical', false, { listenToStorageChanges: false })
-export const editorWidth = useLocalStorage('slidev-editor-width', isClient ? window.innerWidth * 0.4 : 318, { listenToStorageChanges: false })
-export const editorHeight = useLocalStorage('slidev-editor-height', isClient ? window.innerHeight * 0.4 : 300, { listenToStorageChanges: false })
+export const showPresenterCursor = useLocalStorageWithBase('slidev-presenter-cursor', true, { listenToStorageChanges: false })
+export const showEditor = useLocalStorageWithBase('slidev-show-editor', false, { listenToStorageChanges: false })
+export const isEditorVertical = useLocalStorageWithBase('slidev-editor-vertical', false, { listenToStorageChanges: false })
+export const editorWidth = useLocalStorageWithBase('slidev-editor-width', isClient ? window.innerWidth * 0.4 : 318, { listenToStorageChanges: false })
+export const editorHeight = useLocalStorageWithBase('slidev-editor-height', isClient ? window.innerHeight * 0.4 : 300, { listenToStorageChanges: false })
 
 export const activeDragElement = shallowRef<DragElementState | null>(null)
 
-export const presenterNotesFontSize = useLocalStorage('slidev-presenter-font-size', 1, { listenToStorageChanges: false })
-export const presenterLayout = useLocalStorage('slidev-presenter-layout', 1, { listenToStorageChanges: false })
+export const presenterNotesFontSize = useLocalStorageWithBase('slidev-presenter-font-size', 1, { listenToStorageChanges: false })
+export const presenterLayout = useLocalStorageWithBase('slidev-presenter-layout', 1, { listenToStorageChanges: false })
 
 export const viewerCssFilterDefaults = {
   invert: false,
@@ -56,7 +56,7 @@ export const viewerCssFilterDefaults = {
   saturate: 1,
   sepia: 0,
 }
-export const viewerCssFilter = useLocalStorage(
+export const viewerCssFilter = useLocalStorageWithBase(
   'slidev-viewer-css-filter',
   viewerCssFilterDefaults,
   { listenToStorageChanges: false, mergeDefaults: true, deep: true },
@@ -82,7 +82,7 @@ export function decreasePresenterFontSize() {
 
 export const toggleOverview = useToggle(showOverview)
 
-export const syncDirections = useLocalStorage(
+export const syncDirections = useLocalStorageWithBase(
   'slidev-sync-directions',
   {
     viewerSend: true,
@@ -95,3 +95,14 @@ export const syncDirections = useLocalStorage(
     mergeDefaults: true,
   },
 )
+
+/**
+ * LocalStorage with Base URL prefix.
+ * @param key The localStorage key.
+ * @param defaultValue The default value.
+ * @param options Options for useLocalStorage.
+ */
+export function useLocalStorageWithBase<T>(key: string, defaultValue: T, options = {}) {
+  const namespacedKey = `${AppConfig.base}:${key}`
+  return baseUseLocalStorage<T>(namespacedKey, defaultValue, options)
+}

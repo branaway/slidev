@@ -127,36 +127,24 @@ if (props.resize) {
 <template>
   <div
     class="shadow bg-main p-0 grid grid-rows-[max-content_1fr] h-full overflow-hidden text-sm"
-    :class="resize ? 'border-l border-gray-400 border-opacity-20' : ''"
-    :style="resize ? {
+    :class="resize ? 'border-l border-gray-400 border-opacity-20' : ''" :style="resize ? {
       height: vertical ? `${editorHeight}px` : undefined,
       width: !vertical ? `${editorWidth}px` : undefined,
     } : {}"
   >
     <div class="editor-header">
       <div class="editor-tabs">
-        <div
-          class="editor-tab"
-          :class="{ active: tab === 'content' }"
-          @click="switchTab('content')"
-        >
+        <div class="editor-tab" :class="{ active: tab === 'content' }" @click="switchTab('content')">
           <!-- <div class="tab-icon i-carbon:account" /> -->
           <span>页面</span>
         </div>
-        <div
-          class="editor-tab"
-          :class="{ active: tab === 'note' }"
-          @click="switchTab('note')"
-        >
+        <div class="editor-tab" :class="{ active: tab === 'note' }" @click="switchTab('note')">
           <!-- <div class="tab-icon i-carbon:align-box-bottom-right" /> -->
           <span>脚本 {{ noteRef.length > 0 ? '●' : '' }}</span>
         </div>
       </div>
       <div class="editor-header-controls">
-        <IconButton
-          :title="vertical ? '贴在右边' : '贴在底部'"
-          @click="vertical = !vertical"
-        >
+        <IconButton :title="vertical ? '贴在右边' : '贴在底部'" @click="vertical = !vertical">
           <div :class="vertical ? 'i-carbon:open-panel-right' : 'i-carbon:open-panel-bottom'" />
         </IconButton>
         <IconButton title="用编辑器打开" @click="openInEditor()">
@@ -164,8 +152,7 @@ if (props.resize) {
         </IconButton>
 
         <IconButton
-          :title="dirty ? '保存' : '无更改可保存'"
-          :class="dirty ? 'enabled-button' : 'disabled-button'"
+          :title="dirty ? '保存' : '无更改可保存'" :class="dirty ? 'enabled-button' : 'disabled-button'"
           @click="save"
         >
           <div class="i-ic:outline-save-alt w-24px h-24px" />
@@ -230,7 +217,8 @@ if (props.resize) {
 
 .tab-icon {
   margin-right: 8px;
-  font-size: 1.6em; /* Increased icon size */
+  font-size: 1.6em;
+  /* Increased icon size */
 }
 
 /* Enlarged Icon Buttons */
@@ -244,22 +232,28 @@ if (props.resize) {
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  width: 48px; /* Increased button size */
-  height: 48px; /* Increased button size */
-  font-size: 1.5em; /* Larger icons */
-  border-radius: 50%; /* Circular buttons */
+  width: 48px;
+  /* Increased button size */
+  height: 48px;
+  /* Increased button size */
+  font-size: 1.5em;
+  /* Larger icons */
+  border-radius: 50%;
+  /* Circular buttons */
   background-color: var(--icon-button-background, #f5f5f5);
   /* transition: background-color 0.2s, transform 0.1s; */
 }
 
 .IconButton:hover {
   background-color: var(--icon-button-hover-background, #eaeaea);
-  transform: scale(1.1); /* Slight hover zoom effect */
+  transform: scale(1.1);
+  /* Slight hover zoom effect */
 }
 
 .IconButton:active {
   background-color: var(--icon-button-active-background, #ddd);
-  transform: scale(1); /* Reset zoom on click */
+  transform: scale(1);
+  /* Reset zoom on click */
 }
 
 .enabled-button {

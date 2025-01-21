@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { useLocalStorage } from '@vueuse/core'
 import { onMounted, watch } from 'vue'
 import { recorder } from '../logic/recording'
-import { currentCamera, showRecordingDialog } from '../state'
+import { currentCamera, showRecordingDialog, useLocalStorageWithBase } from '../state'
 import DevicesSelectors from './DevicesSelectors.vue'
 import IconButton from './IconButton.vue'
 import MenuButton from './MenuButton.vue'
@@ -15,7 +14,7 @@ const {
   toggleAvatar,
 } = recorder
 
-const previousAvatar = useLocalStorage('slidev-webcam-show', false)
+const previousAvatar = useLocalStorageWithBase('slidev-webcam-show', false)
 watch(showAvatar, () => {
   previousAvatar.value = showAvatar.value
 })

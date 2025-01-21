@@ -196,3 +196,34 @@ packages/slidev/node/vite/extendConfig.ts
 ::>> GET /__slidev/slides/2.json
 ::>> GET /__slidev/slides/2.json
 ```
+
+## remote updating in dev mode
+
+- checkout  `packages/client/composables/useSlideInfo.ts`, which use HMR Hot Module Replacement (HMR) for Real-Time Updates:
+
+```ts
+if (__DEV__) {
+  import.meta.hot?.on('slidev:update-slide', (payload) => {
+    if (payload.no === no)
+      info.value = payload.data;
+  });
+  import.meta.hot?.on('slidev:update-note', (payload) => {
+    if (payload.no === no && info.value && info.value.note?.trim() !== payload.note?.trim())
+      info.value = { ...info.value, ...payload };
+  });
+}
+```
+
+### Remote Update Workflow
+
+- Initial Fetch:
+  - When useSlideInfo or useDynamicSlideInfo is called, the slide data is fetched from the server (execute()).
+- Server-Side Update:
+  - The update method sends a POST request with the updated data (SlidePatch) to the backend.
+  - The backend processes this update and returns the new slide data, which is stored in info.
+- Real-Time Synchronization:
+  - the `packages/slidev/node/vite/loaders.ts` contains logic to send HMR event for content and note update.
+  - HMR listeners (import.meta.hot.on) detect changes from other sources (e.g., another user or a backend process).
+  - The local info reference is updated, reflecting changes in the client automatically.
+- Dynamic Handling:
+  - For dynamically changing slides (useDynamicSlideInfo), map ensures that data for each slide is managed independently and efficiently.

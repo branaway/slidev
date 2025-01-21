@@ -61,6 +61,7 @@ export default function setupIndexHtml({ mode, entry, clientRoot, userRoot, root
 
   main = main
     .replace('__ENTRY__', base + toAtFS(join(clientRoot, 'main.ts')))
+    .replace('__BASE__', base)
     .replace('<!-- head -->', head)
     .replace('<!-- body -->', body)
 

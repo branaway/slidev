@@ -14,7 +14,7 @@ export function useSlideInfo(no: number): UseSlideInfo {
   if (!__SLIDEV_HAS_SERVER__) {
     return {
       info: ref(getSlide(no)?.meta.slide ?? null) as Ref<SlideInfo | null>,
-      update: async () => {},
+      update: async () => { },
     }
   }
 
@@ -41,12 +41,33 @@ export function useSlideInfo(no: number): UseSlideInfo {
 
   if (__DEV__) {
     import.meta.hot?.on('slidev:update-slide', (payload) => {
-      if (payload.no === no)
+      if (payload.no === no) {
         info.value = payload.data
+
+        // bran: Broadcast to parent window
+        window.parent.postMessage(
+          {
+            target: 'slidev-parent',
+            event: 'slideUpdated',
+            slide: info.value,
+          },
+          '*',
+        )
+      }
     })
     import.meta.hot?.on('slidev:update-note', (payload) => {
-      if (payload.no === no && info.value && info.value.note?.trim() !== payload.note?.trim())
+      if (payload.no === no && info.value && info.value.note?.trim() !== payload.note?.trim()) {
         info.value = { ...info.value, ...payload }
+        // bran: Broadcast to parent window
+        window.parent.postMessage(
+          {
+            target: 'slidev-parent',
+            event: 'slideUpdated',
+            slide: info.value,
+          },
+          '*',
+        )
+      }
     })
   }
 

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useHead } from '@unhead/vue'
-import { useLocalStorage } from '@vueuse/core'
 import { computed, ref, watch } from 'vue'
 import { createClicksContextBase } from '../composables/useClicks'
 import { useNav } from '../composables/useNav'
@@ -9,7 +8,7 @@ import { slidesTitle } from '../env'
 import ClicksSlider from '../internals/ClicksSlider.vue'
 import IconButton from '../internals/IconButton.vue'
 import NoteDisplay from '../internals/NoteDisplay.vue'
-import { fullscreen } from '../state'
+import { fullscreen, useLocalStorageWithBase } from '../state'
 import { sharedState } from '../state/shared'
 
 useHead({ title: `Notes - ${slidesTitle}` })
@@ -18,7 +17,7 @@ const { slides, total } = useNav()
 const { isFullscreen, toggle: toggleFullscreen } = fullscreen
 
 const scroller = ref<HTMLDivElement>()
-const fontSize = useLocalStorage('slidev-notes-font-size', 18)
+const fontSize = useLocalStorageWithBase('slidev-notes-font-size', 18)
 const pageNo = computed(() => sharedState.page)
 const currentRoute = computed(() => slides.value.find(i => i.no === pageNo.value))
 

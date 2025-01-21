@@ -20,3 +20,7 @@ export const themeVars = computed(() => {
 export const slidesTitle = configs.slidesTitle
 
 export const pathPrefix = import.meta.env.BASE_URL + (__SLIDEV_HASH_ROUTE__ ? '#/' : '')
+
+export const AppConfig = {
+  base: (window as any).__BASE__ || '/',
+}

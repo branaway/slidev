@@ -2,7 +2,7 @@ import type RecorderType from 'recordrtc'
 import type { Options as RecorderOptions } from 'recordrtc'
 import type { Ref } from 'vue'
 import { isTruthy } from '@antfu/utils'
-import { useDevicesList, useEventListener, useLocalStorage } from '@vueuse/core'
+import { useDevicesList, useEventListener } from '@vueuse/core'
 import { nextTick, ref, shallowRef, watch } from 'vue'
 import { currentCamera, currentMic } from '../state'
 

@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { useDraggable, useEventListener, useLocalStorage } from '@vueuse/core'
+import { useDraggable, useEventListener } from '@vueuse/core'
 import { computed, onMounted, ref, watchEffect } from 'vue'
 import { recorder } from '../logic/recording'
-import { currentCamera } from '../state'
+import { currentCamera, useLocalStorageWithBase } from '../state'
 
-const size = useLocalStorage('slidev-webcam-size', Math.round(Math.min(window.innerHeight, (window.innerWidth) / 8)))
-const position = useLocalStorage('slidev-webcam-pos', {
+const size = useLocalStorageWithBase('slidev-webcam-size', Math.round(Math.min(window.innerHeight, (window.innerWidth) / 8)))
+const position = useLocalStorageWithBase('slidev-webcam-pos', {
   x: window.innerWidth - size.value - 30,
   y: window.innerHeight - size.value - 30,
 }, { deep: true })
