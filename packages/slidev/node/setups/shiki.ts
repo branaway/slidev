@@ -50,12 +50,19 @@ export default async function setupShiki(roots: string[]) {
   if (mergedOptions.themes)
     mergedOptions.defaultColor = false
 
-  console.warn(`[setupShiki] createHighlighter`)
+  const langsExplicit = mergedOptions.langs
+  const langs = langsExplicit ?? Object.keys(bundledLanguages)
+  console.warn(`[setupShiki] createHighlighter for ${langsExplicit} explcitly`)
+
+  const themes = 'themes' in mergedOptions ? Object.values(mergedOptions.themes) : [mergedOptions.theme]
+
   const shiki = await createHighlighter({
     ...mergedOptions,
-    langs: mergedOptions.langs ?? Object.keys(bundledLanguages),
-    themes: 'themes' in mergedOptions ? Object.values(mergedOptions.themes) : [mergedOptions.theme],
+    langs,
+    themes,
   })
+
+  console.warn(`[setupShiki] done createHighlighter`)
 
   cachedRoots = roots
   return cachedShiki = {

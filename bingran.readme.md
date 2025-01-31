@@ -227,3 +227,8 @@ if (__DEV__) {
   - The local info reference is updated, reflecting changes in the client automatically.
 - Dynamic Handling:
   - For dynamically changing slides (useDynamicSlideInfo), map ensures that data for each slide is managed independently and efficiently.
+
+## slide parser
+
+- see `package/parser/core.ts` and the function `parseSlide`
+- the preparser: see `PreparserSetup.ts`

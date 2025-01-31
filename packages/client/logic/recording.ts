@@ -4,14 +4,14 @@ import type { Ref } from 'vue'
 import { isTruthy } from '@antfu/utils'
 import { useDevicesList, useEventListener } from '@vueuse/core'
 import { nextTick, ref, shallowRef, watch } from 'vue'
-import { currentCamera, currentMic } from '../state'
+import { currentCamera, currentMic, useLocalStorageWithBase } from '../state'
 
 type Defined<T> = T extends undefined ? never : T
 type MimeType = Defined<RecorderOptions['mimeType']>
 
 export const recordingName = ref('')
 export const recordCamera = ref(true)
-export const mimeType = useLocalStorage<MimeType>('slidev-record-mimetype', 'video/webm')
+export const mimeType = useLocalStorageWithBase<MimeType>('slidev-record-mimetype', 'video/webm')
 
 export const mimeExtMap: Record<string, string> = {
   'video/webm': 'webm',

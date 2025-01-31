@@ -82,6 +82,7 @@ export function parseSlide(raw: string, options: SlidevParserOptions = {}): Omit
   let content = matterResult.content.trim()
   const revision = hash(raw.trim())
 
+  // bran: this is where all comments are extracted
   const comments = Array.from(content.matchAll(/<!--([\s\S]*?)-->/g))
   if (comments.length) {
     const last = comments[comments.length - 1]
@@ -97,6 +98,7 @@ export function parseSlide(raw: string, options: SlidevParserOptions = {}): Omit
     title = frontmatter.title || frontmatter.name
   }
   else {
+    // bran: extract title from the content
     const match = content.match(/^(#+) (.*)$/m)
     title = match?.[2]?.trim()
     level = match?.[1]?.length

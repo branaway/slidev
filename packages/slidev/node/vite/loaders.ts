@@ -87,10 +87,10 @@ export function createSlidesLoader(
       server = _server
       updateServerWatcher()
 
+      const base = options.viteConfig?.base
+
       server.middlewares.use(async (req, res, next) => {
         // console.debug('bran: req.url in sidev::loader', req.url)
-
-        const base = options.viteConfig?.base
 
         // bran: must consider the base of the url
         let url = req.url || '/'
@@ -158,6 +158,37 @@ export function createSlidesLoader(
         }
 
         next()
+      })
+
+      server.middlewares.use(`${base}api/slides`, async (req, res, next) => {
+        // If you only want to handle GET
+
+        if (req.method === 'GET') {
+          // const url = req.url as string
+          // console.debug({url})
+          // let slideName = url.slice(1) || 'slides.md';
+          // slideName = decodeURIComponent(slideName);
+          // console.debug({slideName})
+
+          try {
+            const slides = data.slides.map((slide) => {
+              (slide.source as any) = undefined;
+              (slide.frontmatterRaw as any) = undefined
+              return slide
+            })
+            res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify(slides))
+          }
+          catch (err) {
+            console.error(err)
+            res.statusCode = 500
+            res.end('Error loading slides')
+          }
+        }
+        else {
+          // For non-GET requests, just move on
+          next()
+        }
       })
     },
 
