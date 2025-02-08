@@ -1,3 +1,6 @@
+** 注意 **: build 的说明在 `CONTRIBUTING.md` 中
+
+
 <br>
 <p align="center">
 <a href="https://sli.dev" target="_blank">

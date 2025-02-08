@@ -51,6 +51,12 @@ Build with watch mode
 pnpm dev
 ```
 
+版本号更新:
+
+```bash
+pnpm release
+```
+
 ### Run Demo
 
 To run Slidev locally, you can run

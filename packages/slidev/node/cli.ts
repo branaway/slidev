@@ -166,7 +166,7 @@ cli.command(
 
       options.data.config.viteConfig = viteConfig
 
-      const host = remote !== undefined ? bind : 'localhost'
+      const host = remote !== undefined ? bind : '0.0.0.0' // bran: was 'localhost'
       port = userPort || await getPort({
         port: 3030,
         random: false,
@@ -174,7 +174,7 @@ cli.command(
         host,
       })
 
-      echo('>>> create server')
+      echo(`>>> create server on ${host}:${port}`)
       server = (await createServer(
         options,
         {
