@@ -53,9 +53,8 @@ export async function createServer(
         && url !== '/'
       ) {
         // eslint-disable-next-line no-console
-        console.log(`::>> ${req.method} ${req.url}`)
+        console.log(`::>> ${req.method} ${req.url}, on base: ${options.data.config.viteConfig.base}`)
       }
-
       next()
     },
   })
