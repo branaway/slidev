@@ -89,7 +89,7 @@ export async function resolveEntry(entryRaw: string) {
       message: `Entry file ${yellow(`"${entry}"`)} does not exist, do you want to create it?`,
     })
     if (create)
-      fs.copyFileSync(resolve(cliRoot, 'template.md'), entry)
+      fs.copyFileSync(resolve(cliRoot, 'template.md'), entry) // TODO: bran make another template
     else
       process.exit(0)
   }

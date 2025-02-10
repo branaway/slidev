@@ -4,7 +4,6 @@ import type { Plugin, ViteDevServer } from 'vite'
 import { notNullish, range } from '@antfu/utils'
 import * as parser from '@slidev/parser/fs'
 import equal from 'fast-deep-equal'
-// import { diff } from 'jest-diff'
 import YAML from 'yaml'
 import { sharedMd } from '../commands/shared'
 import { createDataUtils } from '../options'
@@ -160,9 +159,8 @@ export function createSlidesLoader(
         next()
       })
 
+      // bran: download the slides as a json file, only for narration purpose
       server.middlewares.use(`${base}api/slides`, async (req, res, next) => {
-        // If you only want to handle GET
-
         if (req.method === 'GET') {
           // const url = req.url as string
           // console.debug({url})
@@ -240,7 +238,6 @@ export function createSlidesLoader(
       }
 
       if (!equal(data.config, newData.config)) {
-        // console.debug(`what's the diff bwtween the newData and old data: `, diff(data.config, newData.config))
         moduleIds.add(templateConfigs.id)
       }
 

@@ -167,7 +167,8 @@ packages/slidev/node/vite/extendConfig.ts
 
 ## server part
 
-- in the `loader.ts`, there is a function `createSlidesLoader` that set up a vite server route to save content from the front end.
+- in the `loader.ts`, there is a function `createSlidesLoader` which creates a vite plugin that set up a vite server route to serves/saves content for/from the front end.
+- seems to me the plugin is already bound to a specific markdown file. Can we specifiy the markdown at runtime? (important if we want to modify slidev to serve multiple markdown with one runtime)
 
 ## default config
 
