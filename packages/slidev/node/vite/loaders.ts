@@ -102,6 +102,9 @@ export function createSlidesLoader(
 
         const [, no] = match
         const idx = Number.parseInt(no) - 1
+        // eslint-disable-next-line no-console
+        console.debug('**> page Index:', idx)
+
         if (req.method === 'GET') {
           res.write(JSON.stringify(withRenderedNote(data.slides[idx])))
           return res.end()

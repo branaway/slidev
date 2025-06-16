@@ -1,6 +1,5 @@
 ** 注意 **: build 的说明在 `CONTRIBUTING.md` 中
 
-
 <br>
 <p align="center">
 <a href="https://sli.dev" target="_blank">
@@ -51,6 +50,7 @@ Presentation <b>slide</b>s for <b>dev</b>elopers 🧑‍💻👩‍💻👨‍�
 - 🌟 [**Icons**](https://sli.dev/features/icons) - access to icons from any icon set directly
 - 💻 [**Editor**](https://sli.dev/guide/index#editor) - integrated editor, or the [VSCode extension](https://sli.dev/features/vscode-extension)
 - 🎥 [**Recording**](https://sli.dev/features/recording) - built-in recording and camera view
+- ⚡ [**Streaming Text**](https://sli.dev/features/streaming-markdown) - progressive text rendering with typewriter effect, perfect for AI/LLM presentations
 - 📤 [**Portable**](https://sli.dev/guide/exporting) - export into PDF, PNGs, or PPTX
 - ⚡️ [**Fast**](https://vitejs.dev) - instant reloading powered by [Vite](https://vitejs.dev)
 - 🛠 [**Hackable**](https://sli.dev/custom/) - using Vite plugins, Vue components, or any npm packages

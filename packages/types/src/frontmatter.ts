@@ -268,6 +268,17 @@ export interface HeadmatterConfig extends TransitionOptions {
       }
     }
   }
+
+  /**
+   * Enable streaming markdown rendering effect
+   * @default false
+   */
+  streamingMarkdown?: boolean
+  /**
+   * Speed of streaming markdown rendering in milliseconds per character
+   * @default 20
+   */
+  streamingSpeed?: number
 }
 
 export interface Frontmatter extends TransitionOptions {

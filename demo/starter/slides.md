@@ -30,7 +30,6 @@ shiki:
 # highlighter: bran-turnedoff
 
 # base: /starter/
-
 ---
 
 # Welcome to Slidev
@@ -649,3 +648,18 @@ class: text-center
 [Documentation](https://sli.dev) · [GitHub](https://github.com/slidevjs/slidev) · [Showcases](https://sli.dev/resources/showcases)
 
 <PoweredBySlidev mt-10 />
+
+---
+layout: center
+streamingMarkdown: true
+streamingSpeed: 30
+---
+
+# Streaming Markdown Demo
+
+This slide demonstrates the **streaming markdown rendering** effect.
+
+- The content appears progressively, like a chat with an LLM.
+- You can control the speed and toggle the effect via frontmatter.
+
+Enjoy the effect!

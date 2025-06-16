@@ -4,6 +4,7 @@ import setups from '#slidev/setups/main'
 import TwoSlashFloatingVue from '@shikijs/vitepress-twoslash/client'
 import { createHead } from '@unhead/vue'
 import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
+import StreamingMarkdown from '../builtin/StreamingMarkdown.vue'
 import { createVClickDirectives } from '../modules/v-click'
 import { createVDragDirective } from '../modules/v-drag'
 import { createVMarkDirective } from '../modules/v-mark'
@@ -35,6 +36,8 @@ export default async function setupMain(app: App) {
   app.use(createVDragDirective())
   app.use(createVMotionDirectives())
   app.use(TwoSlashFloatingVue as any, { container: '#twoslash-container' })
+
+  app.component('StreamingMarkdown', StreamingMarkdown)
 
   const context: AppContext = {
     app,

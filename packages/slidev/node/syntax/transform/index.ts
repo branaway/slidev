@@ -9,6 +9,7 @@ import { transformMonaco } from './monaco'
 import { transformPlantUml } from './plant-uml'
 import { transformSlotSugar } from './slot-sugar'
 import { transformSnippet } from './snippet'
+import { transformStreaming } from './streaming'
 
 export async function getMarkdownTransformers(options: ResolvedSlidevOptions): Promise<(false | MarkdownTransformer)[]> {
   const extras = await setupTransformers(options.roots)
@@ -30,6 +31,8 @@ export async function getMarkdownTransformers(options: ResolvedSlidevOptions): P
     options.data.features.katex && transformKaTexWrapper,
     transformPageCSS,
     transformSlotSugar,
+
+    options.data.config.streamingMarkdown && transformStreaming,
 
     ...extras.post,
   ]

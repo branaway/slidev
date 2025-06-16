@@ -20,6 +20,7 @@ import { resolveOptions } from './options'
 import { parser } from './parser'
 import { getRoots, isInstalledGlobally, resolveEntry } from './resolver'
 import setupPreparser from './setups/preparser'
+import { normalizeBase } from './utils/base'
 
 const CONFIG_RESTART_FIELDS: (keyof SlidevConfig)[] = [
   'monaco',
@@ -119,7 +120,8 @@ cli.command(
     .strict()
     .help(),
   async ({ entry, theme, port: userPort, open, log, remote, tunnel, force, inspect, bind, base, viteFsAllow }) => {
-    base = base ? `/${base.replace(/^\/|\/$/g, '')}/` : '/'
+    base = normalizeBase(base)
+    console.log('[slidev debug] Normalized base:', base)
 
     let server: ViteDevServer | undefined
     let port = 3030
@@ -155,6 +157,7 @@ cli.command(
           },
         },
       }
+      console.log('[slidev debug] viteConfig.base:', viteConfig.base)
 
       const options = await resolveOptions({
         entry,
@@ -163,6 +166,7 @@ cli.command(
         inspect,
         viteConfig,
       }, 'dev')
+      console.log('[slidev debug] options.data.config.viteConfig.base:', options.data.config.viteConfig?.base)
 
       options.data.config.viteConfig = viteConfig
 
