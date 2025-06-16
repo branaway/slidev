@@ -71,6 +71,26 @@ Install [Node.js >=18](https://nodejs.org/) and run the following command:
 npm init slidev
 ```
 
+### Alternative: Run with Bun
+
+For a faster runtime experience, you can use [Bun](https://bun.sh/) to run Slidev directly:
+
+```bash
+# Install Bun if you haven't already
+curl -fsSL https://bun.sh/install | bash
+
+# Run Slidev directly with the CLI
+bun @slidev/cli your-slides.md
+```
+
+Or clone this repository and run it directly from source:
+
+```bash
+git clone https://github.com/slidevjs/slidev.git
+cd slidev
+bun packages/slidev/node/cli.ts your-slides.md --open=true
+```
+
 Documentation:
 **[English](https://sli.dev)** | [中文文档](https://cn.sli.dev) | [Français](https://fr.sli.dev) | [Español](https://es.sli.dev) | [Русский](https://ru.sli.dev) | [Português-BR](https://br.sli.dev)
 

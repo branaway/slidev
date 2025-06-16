@@ -73,6 +73,22 @@ pnpm demo:composable-vue
 
 The server will restart automatically every time the builds get updated.
 
+### Quick Development with Bun
+
+For the fastest development experience, you can run Slidev directly using `bun` with the CLI TypeScript file:
+
+```bash
+bun packages/slidev/node/cli.ts your-slides.md --open=true --log=info
+```
+
+For convenience, you can use the provided `slidev.sh` script which wraps this approach:
+
+```bash
+./slidev.sh your-slides.md --open=true --log=info --port 3030
+```
+
+This approach bypasses the build step and runs the TypeScript directly, making it ideal for quick iterations during development.
+
 ## Project Structure
 
 ### Monorepo
