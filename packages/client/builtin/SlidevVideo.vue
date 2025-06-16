@@ -13,6 +13,7 @@ const props = defineProps<{
   timestamp?: string | number
   printTimestamp?: string | number | 'last'
   controls?: boolean
+  onEndedMessage?: string
 }>()
 
 const printPoster = computed(() => props.printPoster ?? props.poster)
@@ -59,6 +60,31 @@ function onLoadedMetadata(ev: Event) {
       : +printTimestamp.value
   }
 }
+
+function onEnded() {
+  if (props.onEndedMessage) {
+    // Send to parent frame if embedded
+    window.parent.postMessage(
+      {
+        target: 'slidev',
+        type: 'video-ended',
+        slideNo: $route?.no,
+        message: props.onEndedMessage,
+        timestamp: Date.now(),
+      },
+      '*',
+    )
+
+    // Also dispatch local event for same-frame listeners
+    window.dispatchEvent(new CustomEvent('slidev-video-ended', {
+      detail: {
+        message: props.onEndedMessage,
+        slideNo: $route?.no,
+        timestamp: Date.now(),
+      },
+    }))
+  }
+}
 </script>
 
 <template>
@@ -68,6 +94,7 @@ function onLoadedMetadata(ev: Event) {
     :controls="!noPlay && props.controls"
     @play="played = true"
     @loadedmetadata="onLoadedMetadata"
+    @ended="onEnded"
   >
     <slot />
   </video>

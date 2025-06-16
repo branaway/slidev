@@ -335,6 +335,41 @@ Props:
   - The starting time of the video in seconds.
 - `printTimestamp` (`string | number | 'last' | undefined`, default: `undefined`):
   - The override for `timestamp` when printing.
+- `onEndedMessage` (`string | undefined`, default: `undefined`):
+  - Custom message to send when video playback ends. Triggers both local events and cross-frame messages for embedded presentations.
+
+### Events
+
+When the video ends and `onEndedMessage` is provided, the component will:
+
+1. **Dispatch a local event** `slidev-video-ended` with details:
+
+   ```js
+   window.addEventListener('slidev-video-ended', (event) => {
+     console.log('Message:', event.detail.message)
+     console.log('Slide:', event.detail.slideNo)
+     console.log('Timestamp:', event.detail.timestamp)
+   })
+   ```
+
+2. **Send a cross-frame message** for embedded presentations:
+   ```js
+   window.addEventListener('message', ({ data }) => {
+     if (data && data.target === 'slidev' && data.type === 'video-ended') {
+       console.log('Video ended:', data.message)
+       console.log('On slide:', data.slideNo)
+       console.log('At time:', data.timestamp)
+     }
+   })
+   ```
+
+### Example with Event Handling
+
+```md
+<SlidevVideo onEndedMessage="Introduction completed!" v-click autoplay controls>
+  <source src="/intro.mp4" type="video/mp4" />
+</SlidevVideo>
+```
 
 ::: warning
 When exporting, the video may fail to load because Chromium does not support some video formats. In this case, you can specify the executable path of the browser. See [Chromium executable path](/guide/exporting.html#executable-path) for more information.
