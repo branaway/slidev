@@ -392,3 +392,31 @@ Props:
 - `height` (`number`): height of the video
 
 You can also make the video start at a specific time if you add `?start=1234` to the id value (where `1234` is seconds),
+
+## `DoodleSvg`
+
+Progressively draws SVGs with a doodle effect.
+
+### Usage
+
+```md
+<DoodleSvg :duration="2000">
+  <svg viewBox="0 0 100 100">
+    <path d="M10,10 L90,90" />
+    <circle cx="50" cy="50" r="20" />
+  </svg>
+</DoodleSvg>
+```
+
+#### Props
+
+- `src` (string): Path to an external SVG file
+- `duration` (number): Total animation duration in ms (default: 2000)
+- `delay` (number): Initial delay before animation starts (default: 0)
+- `strokeWidth` (number): Stroke width for drawing (default: 2)
+- `strokeColor` (string): Stroke color (default: 'currentColor')
+- `fillDelay` (number): Delay before filling shapes (default: 500)
+- `autoplay` (boolean): Whether to start animation automatically (default: true)
+- `trigger` (boolean): Reactive trigger for manual control
+- `easing` (string): CSS easing function (default: 'ease-in-out')
+- `debug` (boolean): Enable debug logging (default: false)

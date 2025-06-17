@@ -44,6 +44,8 @@ export function getDefaultConfig(): SlidevConfig {
     wakeLock: true,
     remote: false,
     mdc: false,
+    streamingMarkdown: false,
+    streamingSpeed: 20,
     viteConfig: {},
   }
 }
