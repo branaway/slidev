@@ -8,11 +8,13 @@ Progressive SVG drawing effects for your presentations
 
 ---
 
-# Basic Usage
+# Basic Usage:
 
 Load an external SVG file with doodle effect:
 
-<DoodleSvg name='external' src='/Tools.svg' :duration="3000" class="w-60 h-60" :debug="true" />
+<!-- <DoodleSvg name='external' src='/Tools.svg' :duration="3000" class="w-160 h-160" :debug="true" /> -->
+
+<DoodleSvg name='external2' src='/uy.svg' :duration="3000" class="w-60 h-60" :debug="true" />
 
 ---
 

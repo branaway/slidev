@@ -19,9 +19,11 @@ Or with inline SVG:
 -->
 
 <script setup lang="ts">
+import { and } from '@vueuse/math'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useNav } from '../composables/useNav'
 import { useSlideContext } from '../context'
+import { resolvedClickMap } from '../modules/v-click'
 
 interface Props {
   name?: string
@@ -35,6 +37,7 @@ interface Props {
   easing?: string
   debug?: boolean
   autoplay?: boolean
+  autoreset?: 'slide' | 'click'
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -47,6 +50,7 @@ const props = withDefaults(defineProps<Props>(), {
   easing: 'ease-in-out',
   debug: false,
   autoplay: true,
+  autoreset: 'click',
 })
 
 const emit = defineEmits<{
@@ -59,14 +63,12 @@ const svgElement = ref<SVGElement>()
 const isAnimating = ref(false)
 const isComplete = ref(false)
 const svgContent = ref('')
+const hasAnimated = ref(false)
 
-const { $renderContext, $page } = useSlideContext()
-const { currentPage } = useNav()
-const slideContext = useSlideContext()
-const isActive = computed(() => $renderContext.value === 'slide' || $renderContext.value === 'presenter')
+const { $slidev, $renderContext, $route } = useSlideContext()
+const { isPrintMode } = useNav()
 
-let hasAnimated = false
-let isStartingAnimation = false
+const noPlay = computed(() => isPrintMode.value || !['slide', 'presenter'].includes($renderContext.value))
 
 // Load external SVG
 async function loadSvg() {
@@ -207,7 +209,7 @@ async function animate() {
 
   if (props.debug) {
     // eslint-disable-next-line no-console
-    console.log('DoodleSvg animate - paths found:', {
+    console.log('DoodleSvg animate - paths found for name:', props.name, {
       svgElement: svgElement.value,
       pathCount: paths.length,
       paths,
@@ -226,10 +228,14 @@ async function animate() {
     return
   }
 
-  const totalDuration = props.duration
-  const pathDuration = totalDuration / Math.max(paths.length, 1)
+  // Calculate duration per path - divide total duration equally among stroke animations
+  const strokeDuration = props.duration / Math.max(paths.length, 1)
+  const fillDuration = props.fillDelay
 
-  // Prepare all paths for animation
+  // Paths start immediately after previous stroke finishes (not waiting for fill)
+  const pathStartInterval = strokeDuration
+
+  // Prepare all paths for sequential animation
   paths.forEach((element, index) => {
     const pathData = convertToPath(element)
     if (!pathData) {
@@ -241,7 +247,7 @@ async function animate() {
     newPath.setAttribute('d', pathData)
     newPath.setAttribute('fill', 'none')
     newPath.setAttribute('stroke', props.strokeColor)
-    newPath.setAttribute('stroke-width', props.strokeWidth.toString())
+    newPath.setAttribute('stroke-width', String(props.strokeWidth))
     newPath.setAttribute('stroke-linecap', 'round')
     newPath.setAttribute('stroke-linejoin', 'round')
 
@@ -249,7 +255,7 @@ async function animate() {
     const copyAttributes = ['class', 'style', 'transform', 'opacity']
     copyAttributes.forEach((attr) => {
       const value = element.getAttribute(attr)
-      if (value && attr !== 'style') { // Don't copy style as it might contain display:none
+      if (value && attr !== 'style') {
         newPath.setAttribute(attr, value)
       }
     })
@@ -261,38 +267,65 @@ async function animate() {
     }
 
     // Set up stroke-dasharray for animation
-    newPath.style.transition = `stroke-dashoffset ${pathDuration}ms ${props.easing}`
-    newPath.style.strokeDasharray = pathLength.toString()
-    newPath.style.strokeDashoffset = pathLength.toString();
+    const pathLengthStr = String(pathLength)
+    newPath.style.transition = `stroke-dashoffset ${strokeDuration}ms ${props.easing}`
+    newPath.style.strokeDasharray = pathLengthStr
+    newPath.style.strokeDashoffset = pathLengthStr
 
     // Hide original element
-    (element as unknown as HTMLElement).style.display = 'none'
+    const elementAsHtml = element as unknown as HTMLElement
+    elementAsHtml.style.display = 'none'
 
     // Insert new path
     element.parentNode?.insertBefore(newPath, element)
 
-    // Start animation with delay
-    const animationDelay = index * (pathDuration * 0.2) + props.delay
+    // Calculate when this path should start (right after previous stroke finishes)
+    const pathStartTime = props.delay + (index * pathStartInterval)
 
+    if (props.debug) {
+      // eslint-disable-next-line no-console
+      console.log(`Path ${index + 1} timing:`, {
+        startTime: pathStartTime,
+        strokeDuration,
+        fillDuration,
+        strokeInterval: pathStartInterval,
+      })
+    }
+
+    // Start stroke animation
     setTimeout(() => {
       newPath.style.strokeDashoffset = '0'
 
-      // Handle fill after stroke animation
+      // Start fill animation after stroke completes
       setTimeout(() => {
         const originalFill = element.getAttribute('fill')
         if (originalFill && originalFill !== 'none') {
-          newPath.style.transition = `fill ${props.fillDelay}ms ease-in-out`
+          newPath.style.transition = `fill ${fillDuration}ms ease-in-out`
           newPath.setAttribute('fill', originalFill)
         }
-      }, pathDuration)
-    }, animationDelay)
+      }, strokeDuration)
+    }, pathStartTime)
   })
 
-  // Mark as complete when all animations finish
-  const totalAnimationTime = (paths.length - 1) * (pathDuration * 0.2) + pathDuration + props.delay + props.fillDelay
+  // Calculate total animation time - last stroke + fill duration
+  const lastStrokeStartTime = props.delay + ((paths.length - 1) * pathStartInterval)
+  const totalAnimationTime = lastStrokeStartTime + strokeDuration + fillDuration
+
+  if (props.debug) {
+    // eslint-disable-next-line no-console
+    console.log('Sequential animation timing:', {
+      pathCount: paths.length,
+      strokeDuration,
+      fillDuration,
+      strokeInterval: pathStartInterval,
+      totalAnimationTime,
+    })
+  }
+
   setTimeout(() => {
     isAnimating.value = false
     isComplete.value = true
+    hasAnimated.value = true
     emit('complete')
   }, totalAnimationTime)
 }
@@ -312,8 +345,7 @@ function reset() {
 
   isAnimating.value = false
   isComplete.value = false
-  hasAnimated = false
-  isStartingAnimation = false
+  hasAnimated.value = false
 
   if (props.debug) {
     // eslint-disable-next-line no-console
@@ -325,168 +357,9 @@ function reset() {
 watch(() => props.trigger, (newVal) => {
   if (newVal) {
     reset()
-    nextTick(() => startAnimationSafe())
+    nextTick(() => animate())
   }
 })
-
-function startAnimationSafe() {
-  if (isStartingAnimation || hasAnimated) {
-    if (props.debug) {
-      // eslint-disable-next-line no-console
-      console.log('DoodleSvg: Animation already starting or completed', { isStartingAnimation, hasAnimated })
-    }
-    return false
-  }
-
-  isStartingAnimation = true
-  if (props.debug) {
-    // eslint-disable-next-line no-console
-    console.log('DoodleSvg: Starting animation (safe)')
-  }
-
-  animate()
-  hasAnimated = true
-
-  // Reset the starting flag after a delay
-  setTimeout(() => {
-    isStartingAnimation = false
-  }, 100)
-
-  return true
-}
-
-function isSvgVisible() {
-  if (!svgElement.value) {
-    if (props.debug) {
-      // eslint-disable-next-line no-console
-      console.log('isSvgVisible: no svgElement')
-    }
-    return false
-  }
-
-  // Check if element is in the DOM and potentially visible
-  const rect = svgElement.value.getBoundingClientRect()
-  const isInDOM = svgElement.value.isConnected
-  const hasContainer = svgContainer.value !== null
-
-  // Use click context to determine if we should be visible
-  const currentClicks = slideContext.$clicksContext.current
-
-  // Find if we're inside a v-click element and get its click number
-  const vClickElement = svgContainer.value?.closest('[data-v-click]')
-  let requiredClicks = 0
-
-  if (props.debug) {
-    // eslint-disable-next-line no-console
-    console.log('DoodleSvg v-click detection:', {
-      pageId: props.name,
-      svgContainer: !!svgContainer.value,
-      vClickElement: !!vClickElement,
-      vClickElementTag: vClickElement?.tagName,
-      vClickElementClasses: vClickElement ? Array.from(vClickElement.classList) : [],
-      dataVClick: vClickElement?.getAttribute('data-v-click'),
-    })
-  }
-
-  if (vClickElement) {
-    const clickAttr = vClickElement.getAttribute('data-v-click')
-    if (clickAttr) {
-      requiredClicks = Number.parseInt(clickAttr, 10) || 0
-    }
-  }
-
-  // Component should be visible if current clicks >= required clicks
-  const shouldBeVisible = currentClicks >= requiredClicks
-  const isVisible = isInDOM && hasContainer && shouldBeVisible
-
-  if (props.debug) {
-    // eslint-disable-next-line no-console
-    console.log('isSvgVisible check:', {
-      width: rect.width,
-      height: rect.height,
-      isInDOM,
-      hasContainer,
-      currentClicks,
-      requiredClicks,
-      shouldBeVisible,
-      isVisible,
-      vClickElement: !!vClickElement,
-      svgElement: svgElement.value,
-    })
-  }
-
-  return isVisible
-}
-
-// Watch for when we should start the animation - improved timing
-watch(
-  [$page, currentPage, isActive, svgElement, () => slideContext.$clicksContext.current],
-  async () => {
-    if (!svgElement.value)
-      return
-
-    const isCurrentPage = $page.value === currentPage.value
-
-    if (props.debug) {
-      // eslint-disable-next-line no-console
-      console.log('DoodleSvg watch triggered:', {
-        pageId: props.name,
-        page: $page.value,
-        currentPage: currentPage.value,
-        isCurrentPage,
-        isActive: isActive.value,
-        hasAnimated,
-        svgVisible: isSvgVisible(),
-        autoplay: props.autoplay,
-        trigger: props.trigger,
-        currentClicks: slideContext.$clicksContext.current,
-      })
-    }
-
-    // Reset if we navigate away from this page
-    if (!isCurrentPage) {
-      if (props.debug) {
-        // eslint-disable-next-line no-console
-        console.log('DoodleSvg: Resetting animation (left page)')
-      }
-      reset()
-      hasAnimated = false
-      return
-    }
-
-    // Only animate when this page is the current page
-    const shouldAnimate = isCurrentPage
-      && isActive.value
-      && isSvgVisible()
-      && props.autoplay
-      && !props.trigger
-      && !hasAnimated
-
-    if (props.debug) {
-      // eslint-disable-next-line no-console
-      console.log('DoodleSvg shouldAnimate conditions:', {
-        isCurrentPage,
-        isActive: isActive.value,
-        isSvgVisible: isSvgVisible(),
-        autoplay: props.autoplay,
-        trigger: props.trigger,
-        hasAnimated,
-        shouldAnimate,
-      })
-    }
-
-    if (shouldAnimate) {
-      // Add small delay to ensure page navigation is complete
-      await nextTick()
-      setTimeout(() => {
-        if ($page.value === currentPage.value && !hasAnimated) {
-          startAnimationSafe()
-        }
-      }, 100) // Small delay to ensure stable navigation
-    }
-  },
-  { flush: 'post' }, // Changed from immediate: true to flush: 'post'
-)
 
 onMounted(async () => {
   if (props.src) {
@@ -497,7 +370,42 @@ onMounted(async () => {
     svgElement.value = svgContainer.value.querySelector('svg') || undefined
   }
   await nextTick()
-  // No need to start polling here anymore
+
+  if (noPlay.value)
+    return
+
+  const matchRoute = computed(() => !!$route && $route.no === $slidev?.nav.currentSlideNo)
+  const matchClick = computed(() => {
+    if (!svgContainer.value)
+      return true
+
+    // Check if this element or any parent has v-click
+    let element = svgContainer.value as Element | null
+    while (element) {
+      const clickInfo = resolvedClickMap.get(element)
+      if (clickInfo) {
+        return clickInfo.isShown.value
+      }
+      element = element.parentElement
+    }
+
+    // Default to true if no v-click found
+    return true
+  })
+  const shouldAnimate = and(matchRoute, matchClick)
+
+  watch(shouldAnimate, () => {
+    if (shouldAnimate.value) {
+      if (props.autoplay && !hasAnimated.value)
+        animate()
+    }
+    else {
+      if (props.autoreset === 'click' || (props.autoreset === 'slide' && !matchRoute.value)) {
+        reset()
+        hasAnimated.value = false
+      }
+    }
+  }, { immediate: true })
 })
 
 // Expose methods for manual control
@@ -506,6 +414,7 @@ defineExpose({
   reset,
   isAnimating: computed(() => isAnimating.value),
   isComplete: computed(() => isComplete.value),
+  hasAnimated: computed(() => hasAnimated.value),
 })
 </script>
 
