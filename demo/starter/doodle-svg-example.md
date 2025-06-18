@@ -14,7 +14,7 @@ Load an external SVG file with doodle effect:
 
 <!-- <DoodleSvg name='external' src='/Tools.svg' :duration="3000" class="w-160 h-160" :debug="true" /> -->
 
-<DoodleSvg name='external2' src='/uy.svg' :duration="3000" class="w-60 h-60" :debug="true" />
+<DoodleSvg name='external2' src='/girl.svg' :duration="3000" class="w-10 h-10" :debug="true" />
 
 ---
 
@@ -96,11 +96,11 @@ function resetAnimation() {
 
 ---
 
-# Integration with v-click
+# Integration with v-click!!
 
 <v-click>
 
-<DoodleSvg name='v-click' :duration="2000" stroke-color="#059669" :debug="true">
+<DoodleSvg name='v-click' :duration="2000" stroke-color="#059669" debug='true'>
   <svg viewBox="0 0 200 100" class="w-60 h-30">
     <path d="M20,50 L180,50" fill="none"/>
     <path d="M170,40 L180,50 L170,60" fill="none"/>
@@ -114,3 +114,4 @@ function resetAnimation() {
 ## Perfect for step-by-step reveals!
 
 </v-click>
+

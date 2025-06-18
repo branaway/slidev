@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <div id="app">
+    <DoodleSvg src="/uy1.svg" :duration="2000" :debug="true" />
+  </div>
+
+  <script type="module">
+    import { createApp } from 'vue'
+    import { DoodleSvg } from '../../packages/client/builtin/DoodleSvg.vue'
+
+    const app = createApp({
+      components: {
+        DoodleSvg
+      }
+    })
+    app.mount('#app')
+  </script>
+</body>
+</html> 

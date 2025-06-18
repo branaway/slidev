@@ -1,0 +1,19 @@
+--- DoodleSvg.vue.orig
++++ DoodleSvg.vue
+@@ -158,8 +158,14 @@
+ 
+ // Get fill color including inherited values
+ function getEffectiveFill(element: Element): string {
+-  const fill = getComputedStyleValue(element, 'fill')
+-  return fill && fill !== 'none' ? fill : ''
++  // Skip elements with fill="none" and look for inherited fill
++  let current = element as Element | null
++  while (current && current.tagName !== 'svg') {
++    const fill = current.getAttribute('fill')
++    if (fill && fill !== 'none') {
++      return fill
++    }
++    current = current.parentElement
++  }
++  return ''
+ } 
