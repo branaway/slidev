@@ -12,10 +12,10 @@ Progressive SVG drawing effects for your presentations
 
 Load an external SVG file with doodle effect:
 
-<DoodleSvg name='external2' src='/ice-cream-svgrepo-com.svg' :duration="3000" class="w-55 h-30" :debug="false" />
+<DoodleSvg name='external2' src='/girl.svg' :duration="3000" class="w-55 h-30" :debug="false" />
 
 
-<DoodleSvg name='external' src='/resume.svg' :duration="26000" class="w-100 h-30" />
+<DoodleSvg name='external' src='/resume-2.svg' :duration="26000" class="w-100 h-30" />
 
 ---
 

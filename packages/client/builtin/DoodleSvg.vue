@@ -53,7 +53,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   duration: 2000,
   delay: 0,
-  strokeWidth: 2,
+  strokeWidth: 1,
   strokeColor: 'currentColor',
   fillDelay: 500,
   trigger: false,
@@ -624,7 +624,7 @@ async function animate() {
       staticPath.setAttribute('d', pathData)
       staticPath.style.fill = 'none'
       staticPath.style.stroke = 'red'
-      staticPath.style.strokeWidth = '2'
+      staticPath.style.strokeWidth = '1'
       staticPath.style.opacity = '0.5'
       staticPath.setAttribute('data-debug', 'static-reference')
       element.parentNode?.insertBefore(staticPath, element)
