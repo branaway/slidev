@@ -19,6 +19,13 @@ export {
   useIsSlideActive,
 } from './logic/slides'
 
+export * from './modules/context'
+export * from './modules/mermaid'
+export * from './modules/v-click'
+export * from './modules/v-drag'
+export * from './modules/v-mark'
+export * from './modules/v-motion'
+
 export type { DrawingsState } from './state/drawings'
 export { drawingState, onDrawingUpdate } from './state/drawings'
 export type { SharedState } from './state/shared'
