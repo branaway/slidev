@@ -12,9 +12,10 @@ Progressive SVG drawing effects for your presentations
 
 Load an external SVG file with doodle effect:
 
-<!-- <DoodleSvg name='external' src='/Tools.svg' :duration="3000" class="w-160 h-160" :debug="true" /> -->
-
 <DoodleSvg name='external2' src='/ice-cream-svgrepo-com.svg' :duration="3000" class="w-55 h-30" :debug="false" />
+
+
+<DoodleSvg name='external' src='/resume.svg' :duration="26000" class="w-100 h-30" />
 
 ---
 
@@ -115,3 +116,26 @@ function resetAnimation() {
 
 </v-click>
 
+---
+
+# Two Doodles Example
+
+You can embed multiple DoodleSvg components on the same page. Each will animate independently.
+
+<div class="flex gap-8 items-center justify-center">
+  <DoodleSvg name="doodle1" :duration="2500" stroke-color="#6366f1" :stroke-width="2">
+    <svg viewBox="0 0 100 100" class="w-40 h-40">
+      <circle cx="50" cy="50" r="40" fill="none" />
+      <path d="M10,90 Q50,10 90,90" fill="none" />
+    </svg>
+  </DoodleSvg>
+
+  <DoodleSvg name="doodle2" :duration="1800" stroke-color="#f59e42" :stroke-width="2">
+    <svg viewBox="0 0 100 100" class="w-40 h-40">
+      <rect x="20" y="20" width="60" height="60" fill="none" />
+      <path d="M20,80 L80,20" fill="none" />
+    </svg>
+  </DoodleSvg>
+</div>
+
+---

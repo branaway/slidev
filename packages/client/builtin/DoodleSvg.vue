@@ -21,6 +21,7 @@ Or with inline SVG:
 <script setup lang="ts">
 import { and } from '@vueuse/math'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import pencilPointer from '../assets/pencil128.png'
 import { useNav } from '../composables/useNav'
 import { useSlideContext } from '../context'
 import { resolvedClickMap } from '../modules/v-click'
@@ -46,6 +47,7 @@ interface Props {
   pointerGap?: number
   width?: number // in pixels, user override
   height?: number // in pixels, user override
+  sortPaths?: boolean // if true, sort paths by start point
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -60,13 +62,14 @@ const props = withDefaults(defineProps<Props>(), {
   autoplay: true,
   autoreset: 'click',
   showPointer: true,
-  pointerSrc: '/arrow-pointer.svg',
+  pointerSrc: pencilPointer,
   pointerSize: 24,
   pointerOffsetX: 0,
   pointerOffsetY: 0,
   pointerGap: 0,
   width: undefined,
   height: undefined,
+  sortPaths: false,
 })
 
 const emit = defineEmits<{
@@ -249,12 +252,23 @@ function getComputedStyleValue(element: Element, property: string): string {
 
 // Get fill color including inherited values
 function getEffectiveFill(element: Element): string {
-  // Skip elements with fill="none" and look for inherited fill
+  // Check fill attribute first
   let current = element as Element | null
   while (current && current.tagName !== 'svg') {
     const fill = current.getAttribute('fill')
     if (fill && fill !== 'none') {
       return fill
+    }
+    // Check style attribute for fill
+    const styleAttr = current.getAttribute('style')
+    if (styleAttr) {
+      const styles = styleAttr.split(';').map(s => s.trim())
+      for (const style of styles) {
+        const [prop, value] = style.split(':').map(s => s.trim())
+        if (prop === 'fill' && value && value !== 'none') {
+          return value
+        }
+      }
     }
     current = current.parentElement
   }
@@ -490,6 +504,49 @@ function addTimeout(fn: () => void, delay: number) {
   return id
 }
 
+// Helper: get the start point of a path (or shape)
+function getPathStartPoint(element: Element, transform: DOMMatrix): { x: number, y: number } {
+  const tagName = element.tagName.toLowerCase()
+  if (tagName === 'path') {
+    const d = (element as SVGPathElement).getAttribute('d') || ''
+    try {
+      // Use SVGPathElement to get the first point
+      const tempSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+      const tempPath = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+      tempPath.setAttribute('d', d)
+      tempSvg.appendChild(tempPath)
+      document.body.appendChild(tempSvg)
+      const pt = tempPath.getPointAtLength(0)
+      document.body.removeChild(tempSvg)
+      return { x: pt.x, y: pt.y }
+    }
+    catch { return { x: 0, y: 0 } }
+  }
+  // For other shapes, use their first coordinate
+  if (tagName === 'line') {
+    const x1 = Number.parseFloat(element.getAttribute('x1') || '0')
+    const y1 = Number.parseFloat(element.getAttribute('y1') || '0')
+    return transformPoint(x1, y1, transform)
+  }
+  if (tagName === 'circle' || tagName === 'ellipse') {
+    const cx = Number.parseFloat(element.getAttribute('cx') || '0')
+    const cy = Number.parseFloat(element.getAttribute('cy') || '0')
+    return transformPoint(cx, cy, transform)
+  }
+  if (tagName === 'rect') {
+    const x = Number.parseFloat(element.getAttribute('x') || '0')
+    const y = Number.parseFloat(element.getAttribute('y') || '0')
+    return transformPoint(x, y, transform)
+  }
+  if (tagName === 'polyline' || tagName === 'polygon') {
+    const points = (element.getAttribute('points') || '').trim().split(/\s|,/)
+    const x = Number.parseFloat(points[0] || '0')
+    const y = Number.parseFloat(points[1] || '0')
+    return transformPoint(x, y, transform)
+  }
+  return { x: 0, y: 0 }
+}
+
 // Animate the drawing effect
 async function animate() {
   if (!svgElement.value || isAnimating.value)
@@ -504,7 +561,21 @@ async function animate() {
   emit('start')
 
   expandUseElements(svgElement.value)
-  const paths = getDrawablePaths(svgElement.value)
+  let paths = getDrawablePaths(svgElement.value)
+
+  // Sort paths if requested
+  if (props.sortPaths) {
+    paths = paths.map((el) => {
+      const transform = getCombinedTransform(el)
+      const pt = getPathStartPoint(el, transform)
+      return { el, pt }
+    })
+      .sort((a, b) => a.pt.y - b.pt.y || a.pt.x - b.pt.x)
+      .map(obj => obj.el)
+    if (props.debug) {
+      _log('Sorted paths by start point')
+    }
+  }
 
   if (props.debug) {
     _log('Found drawable elements:', paths.map(p => ({
@@ -526,26 +597,27 @@ async function animate() {
     return
   }
 
-  const strokeDurationPerPath = props.duration / Math.max(paths.length, 1)
+  // --- Proportional timing by path length ---
+  // Precompute all path data and lengths
+  const pathInfos = paths.map((element) => {
+    const transform = getCombinedTransform(element)
+    const pathData = convertToPath(element, transform)
+    const pathLength = getPathLength(pathData)
+    return { element, transform, pathData, pathLength }
+  })
+  // Only keep valid paths
+  const validPathInfos = pathInfos.filter(info => info.pathData && info.pathLength > 0)
+  const totalLength = validPathInfos.reduce((sum, info) => sum + info.pathLength, 0)
+  if (props.debug) {
+    _log('Total path length:', totalLength)
+  }
   const fillAnimationDuration = props.fillDelay
   const pointerGap = props.pointerGap || 0
   let accumulatedDelay = props.delay
 
-  paths.forEach((element, index) => {
-    const transform = getCombinedTransform(element)
-    const pathData = convertToPath(element, transform)
-
-    if (!pathData) {
-      if (props.debug && element.tagName.toLowerCase() === 'circle') {
-        _log(`Circle element at index ${index} was skipped.`, {
-          element,
-          reason: 'No path data generated',
-          attributes: Array.from(element.attributes).map(attr => `${attr.name}="${attr.value}"`),
-        })
-      }
-      return
-    }
-
+  validPathInfos.forEach((info) => {
+    const { element, transform, pathData, pathLength } = info
+    const duration = totalLength > 0 ? (pathLength / totalLength) * props.duration : 0
     // Add a static debug path if in debug mode
     if (props.debug) {
       const staticPath = document.createElementNS('http://www.w3.org/2000/svg', 'path')
@@ -557,23 +629,23 @@ async function animate() {
       staticPath.setAttribute('data-debug', 'static-reference')
       element.parentNode?.insertBefore(staticPath, element)
     }
-
-    const pathLength = getPathLength(pathData)
-    if (pathLength <= 0)
-      return
-
     const pathLengthStr = String(pathLength)
     const newPath = document.createElementNS('http://www.w3.org/2000/svg', 'path')
     newPath.setAttribute('d', pathData)
     newPath.setAttribute('data-doodle-animated', 'true')
-
+    // If the original element is a <path> and has a transform attribute, copy it to the new path
+    if (element.tagName.toLowerCase() === 'path') {
+      const originalTransform = element.getAttribute('transform')
+      if (originalTransform) {
+        newPath.setAttribute('transform', originalTransform)
+      }
+    }
     // Get all style attributes BEFORE setting any attributes on newPath
     const originalFill = getEffectiveFill(element)
     const originalStroke = getComputedStyleValue(element, 'stroke') || props.strokeColor
     let originalStrokeWidth = getComputedStyleValue(element, 'stroke-width') || String(props.strokeWidth)
     const originalStrokeLinecap = getComputedStyleValue(element, 'stroke-linecap') || 'round'
     const originalStrokeLinejoin = getComputedStyleValue(element, 'stroke-linejoin') || 'round'
-
     // Scale the stroke width based on the transformation
     const scaleX = Math.sqrt(transform.a * transform.a + transform.b * transform.b)
     const scaleY = Math.sqrt(transform.c * transform.c + transform.d * transform.d)
@@ -582,51 +654,52 @@ async function animate() {
     if (!Number.isNaN(numericWidth)) {
       originalStrokeWidth = String(numericWidth * scale)
     }
-
     // Apply the attributes in correct order and ensure they're also set as styles
-    newPath.setAttribute('fill', 'none') // Start with no fill
+    // Always set stroke and fill explicitly to avoid SVG defaults (black)
+    if (originalFill && originalFill !== 'none') {
+      newPath.setAttribute('fill', originalFill)
+      newPath.style.fill = originalFill
+    }
+    else {
+      newPath.setAttribute('fill', 'none')
+      newPath.style.fill = 'none'
+    }
     newPath.setAttribute('stroke', originalStroke)
+    newPath.style.stroke = originalStroke
     newPath.setAttribute('stroke-width', originalStrokeWidth)
+    newPath.style.strokeWidth = originalStrokeWidth
     newPath.setAttribute('stroke-linecap', originalStrokeLinecap)
+    newPath.style.strokeLinecap = originalStrokeLinecap
     newPath.setAttribute('stroke-linejoin', originalStrokeLinejoin)
-
+    newPath.style.strokeLinejoin = originalStrokeLinejoin
     // Set initial styles
     newPath.style.fill = 'none'
     newPath.style.stroke = originalStroke
     newPath.style.strokeWidth = originalStrokeWidth
     newPath.style.strokeLinecap = originalStrokeLinecap
     newPath.style.strokeLinejoin = originalStrokeLinejoin
-
     // Setup the stroke dash animation
     newPath.style.strokeDasharray = `${pathLengthStr}`
     newPath.style.strokeDashoffset = `${pathLengthStr}`
-
     const elementAsHtml = element as unknown as HTMLElement
     elementAsHtml.style.display = 'none'
-
     element.parentNode?.insertBefore(newPath, element.nextSibling)
-
     const strokeStartTime = accumulatedDelay
-    accumulatedDelay += strokeDurationPerPath
-
+    accumulatedDelay += duration
     // Ensure the path is visible before animation
     newPath.style.opacity = '1'
     newPath.style.visibility = 'visible'
-
     // Start the stroke animation
     addTimeout(() => {
       // Set initial state
       newPath.style.strokeDasharray = pathLengthStr
       newPath.style.strokeDashoffset = pathLengthStr
       newPath.style.transition = 'none'
-
       // Force layout (flush)
       newPath.getBoundingClientRect()
-
       // Set transition and start animation
-      newPath.style.transition = `stroke-dashoffset ${strokeDurationPerPath}ms ${props.easing}`
+      newPath.style.transition = `stroke-dashoffset ${duration}ms ${props.easing}`
       newPath.style.strokeDashoffset = '0'
-
       // After stroke animation, animate the fill
       addTimeout(() => {
         if (originalFill && originalFill !== 'none') {
@@ -639,9 +712,25 @@ async function animate() {
         // Clean up dash settings so no residual artifacts remain
         newPath.style.strokeDasharray = ''
         newPath.style.strokeDashoffset = ''
-      }, strokeDurationPerPath)
-
-      startPointerAnimation(newPath, pathLength, strokeDurationPerPath)
+      }, duration)
+      // Only start pointer animation if pathLength > 0
+      if (pathLength > 0) {
+        if (props.debug) {
+          _log('Starting pointer animation for path:', { pathData, pathLength })
+        }
+        startPointerAnimation(newPath, pathLength, duration, transform)
+        // Visual debug: draw pointer path
+        if (props.debug) {
+          const pointerDebugPath = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+          pointerDebugPath.setAttribute('d', pathData)
+          pointerDebugPath.style.fill = 'none'
+          pointerDebugPath.style.stroke = 'blue'
+          pointerDebugPath.style.strokeWidth = '1'
+          pointerDebugPath.style.opacity = '0.3'
+          pointerDebugPath.setAttribute('data-debug', 'pointer-path')
+          newPath.parentNode?.insertBefore(pointerDebugPath, newPath.nextSibling)
+        }
+      }
     }, strokeStartTime)
   })
 
@@ -655,7 +744,7 @@ async function animate() {
   }, totalAnimationTime)
 }
 
-function startPointerAnimation(pathEl: SVGPathElement, pathLength: number, duration: number) {
+function startPointerAnimation(pathEl: SVGPathElement, pathLength: number, duration: number, transform?: DOMMatrix) {
   if (!props.showPointer || !svgElement.value || !svgContainer.value)
     return
 
@@ -677,7 +766,10 @@ function startPointerAnimation(pathEl: SVGPathElement, pathLength: number, durat
   const pointer = document.createElement('img')
   pointer.src = props.pointerSrc
   pointer.className = 'doodle-svg-pointer'
-  pointer.style.width = `${props.pointerSize}px`
+  if (props.pointerSize)
+    pointer.style.width = `${props.pointerSize}px`
+  else
+    pointer.style.width = 'auto'
   pointer.style.position = 'absolute'
   pointer.style.left = '0'
   pointer.style.top = '0'
@@ -694,7 +786,11 @@ function startPointerAnimation(pathEl: SVGPathElement, pathLength: number, durat
   function step(now: number) {
     const elapsed = now - start
     const progress = Math.min(1, elapsed / duration)
-    const pt = pathEl.getPointAtLength(pathLength * progress)
+    let pt = pathEl.getPointAtLength(pathLength * progress)
+    // Apply the path's transform if present
+    if (transform) {
+      pt = new DOMPoint(pt.x, pt.y).matrixTransform(transform)
+    }
     const globalPoint = new DOMPoint(pt.x, pt.y).matrixTransform(svgCTM!)
     const rect = container.getBoundingClientRect()
     const localX = globalPoint.x - rect.left + props.pointerOffsetX
@@ -722,8 +818,8 @@ function reset() {
   if (!svgElement.value)
     return
 
-  const animatedPaths = svgElement.value.querySelectorAll('path[data-doodle-animated="true"]')
-  animatedPaths.forEach(path => path.remove())
+  // Remove all animated and debug paths
+  svgElement.value.querySelectorAll('path[data-doodle-animated="true"], path[data-debug]').forEach(path => path.remove())
 
   // cancel pending RAFs
   while (rafHandles.length)
@@ -733,7 +829,7 @@ function reset() {
   while (timeoutHandles.length)
     clearTimeout(timeoutHandles.pop()!)
 
-  // remove any remaining pointer elements
+  // remove any remaining pointer elements (safety: remove all, not just one)
   svgContainer.value?.querySelectorAll('.doodle-svg-pointer').forEach(el => el.remove())
 
   const hiddenElements = svgElement.value.querySelectorAll('[style*="display: none"]')
@@ -864,5 +960,7 @@ onMounted(async () => {
   pointer-events: none;
   user-select: none;
   transform-origin: 0 0; /* tip of pointer */
+  z-index: 10; /* Ensure pointer is above SVG */
+  will-change: transform; /* Hint for smoother movement */
 }
 </style>
