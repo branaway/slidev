@@ -14,13 +14,13 @@ Load an external SVG file with doodle effect:
 
 <!-- <DoodleSvg name='external' src='/Tools.svg' :duration="3000" class="w-160 h-160" :debug="true" /> -->
 
-<DoodleSvg name='external2' src='/girl.svg' :duration="3000" class="w-10 h-10" :debug="true" />
+<DoodleSvg name='external2' src='/ice-cream-svgrepo-com.svg' :duration="3000" class="w-55 h-30" :debug="false" />
 
 ---
 
 # Inline SVG Example
 
-<DoodleSvg name='inline' :duration="8000" stroke-color="#3b82f6" :stroke-width="1" >
+<DoodleSvg name='inline' :duration="8000" stroke-color="#3b82f6" :stroke-width="1"  :pointer-gap="500">
   <svg viewBox="0 0 200 200" class="w-60 h-60">
     <path d="M20,100 Q100,20 180,100 Q100,180 20,100" fill="none"/>
     <circle cx="100" cy="100" r="30" fill="none"/>

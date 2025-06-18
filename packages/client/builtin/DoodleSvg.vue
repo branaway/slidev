@@ -43,6 +43,9 @@ interface Props {
   pointerSize?: number
   pointerOffsetX?: number
   pointerOffsetY?: number
+  pointerGap?: number
+  width?: number // in pixels, user override
+  height?: number // in pixels, user override
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -61,6 +64,9 @@ const props = withDefaults(defineProps<Props>(), {
   pointerSize: 24,
   pointerOffsetX: 0,
   pointerOffsetY: 0,
+  pointerGap: 0,
+  width: undefined,
+  height: undefined,
 })
 
 const emit = defineEmits<{
@@ -89,14 +95,38 @@ async function loadSvg() {
     return
 
   try {
-    // console.log('external svg:', props.src)
     const response = await fetch(props.src)
-
-    // console.log('response:', response)
     if (response.ok) {
-      const text = await response.text()
-
-      // console.log('response.text():', text)
+      let text = await response.text()
+      const parser = new DOMParser()
+      const doc = parser.parseFromString(text, 'image/svg+xml')
+      const svg = doc.querySelector('svg')
+      if (svg) {
+        // --- Efficient scaling logic start ---
+        // Set viewBox if missing (use width/height if available, else fallback to 0 0 200 200)
+        if (!svg.getAttribute('viewBox')) {
+          const width = svg.getAttribute('width')
+          const height = svg.getAttribute('height')
+          if (width && height) {
+            svg.setAttribute('viewBox', `0 0 ${width} ${height}`)
+          }
+          else {
+            svg.setAttribute('viewBox', '0 0 200 200')
+          }
+        }
+        // Set/remove width/height based on user props
+        if (props.width)
+          svg.setAttribute('width', String(props.width))
+        else
+          svg.removeAttribute('width')
+        if (props.height)
+          svg.setAttribute('height', String(props.height))
+        else
+          svg.removeAttribute('height')
+        // --- Efficient scaling logic end ---
+        // Serialize back to string
+        text = svg.outerHTML
+      }
       svgContent.value = text
     }
   }
@@ -498,7 +528,8 @@ async function animate() {
 
   const strokeDurationPerPath = props.duration / Math.max(paths.length, 1)
   const fillAnimationDuration = props.fillDelay
-  const pathStartInterval = strokeDurationPerPath
+  const pointerGap = props.pointerGap || 0
+  let accumulatedDelay = props.delay
 
   paths.forEach((element, index) => {
     const transform = getCombinedTransform(element)
@@ -575,7 +606,8 @@ async function animate() {
 
     element.parentNode?.insertBefore(newPath, element.nextSibling)
 
-    const strokeStartTime = props.delay + (index * pathStartInterval)
+    const strokeStartTime = accumulatedDelay
+    accumulatedDelay += strokeDurationPerPath
 
     // Ensure the path is visible before animation
     newPath.style.opacity = '1'
@@ -613,8 +645,7 @@ async function animate() {
     }, strokeStartTime)
   })
 
-  const lastPathStrokeStartTime = props.delay + ((paths.length - 1) * pathStartInterval)
-  const totalAnimationTime = lastPathStrokeStartTime + strokeDurationPerPath + fillAnimationDuration
+  const totalAnimationTime = accumulatedDelay + fillAnimationDuration - pointerGap
 
   addTimeout(() => {
     isAnimating.value = false
@@ -822,8 +853,10 @@ onMounted(async () => {
 }
 
 .doodle-svg-container svg {
-  width: 100%;
+  width: auto;
   height: auto;
+  max-width: 200px;
+  max-height: 200px;
 }
 
 .doodle-svg-pointer {
