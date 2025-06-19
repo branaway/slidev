@@ -8,11 +8,17 @@ Progressive SVG drawing effects for your presentations
 
 ---
 
-# Basic Usage:
+# Basic Usage: etxernal file 1
 
 Load an external SVG file with doodle effect:
 
-<DoodleSvg name='external2' src='/girl.svg' :duration="3000" class="w-55 h-30" :debug="false" />
+<DoodleSvg name='external2' src='/girl.svg' :duration="13000" class="w-55 h-30" :debug="false" />
+
+---
+
+# Basic Usage: etxernal file 2
+
+Load an external SVG file with doodle effect:
 
 
 <DoodleSvg name='external' src='/resume-2.svg' :duration="26000" class="w-100 h-30" />
@@ -21,7 +27,7 @@ Load an external SVG file with doodle effect:
 
 # Inline SVG Example
 
-<DoodleSvg name='inline' :duration="8000" stroke-color="#3b82f6" :stroke-width="1"  :pointer-gap="500">
+<DoodleSvg name='inline' :duration="18000" stroke-color="#3b82f6" :stroke-width="1" >
   <svg viewBox="0 0 200 200" class="w-60 h-60">
     <path d="M20,100 Q100,20 180,100 Q100,180 20,100" fill="none"/>
     <circle cx="100" cy="100" r="30" fill="none"/>
@@ -35,23 +41,20 @@ Load an external SVG file with doodle effect:
 
 # Advanced Options
 
-<script setup>
+<!-- <script setup>
 function onDoodleStart() {
   console.log('Doodle animation started!')
 }
 function onDoodleComplete() {
   console.log('Doodle animation completed!')
 }
-</script>
+</script> -->
 
 <DoodleSvg
 name='advanced'
-:duration="4000"
+:duration="18000"
 stroke-color="#ef4444"
-:stroke-width="2"
-:fill-delay="1000"
-@start="onDoodleStart"
-@complete="onDoodleComplete">
+:stroke-width="2">
 
   <svg viewBox="0 0 300 200" class="w-80 h-60">
     <rect x="50" y="50" width="100" height="60" fill="#fbbf24"/>
@@ -101,7 +104,7 @@ function resetAnimation() {
 
 <v-click>
 
-<DoodleSvg name='v-click' :duration="2000" stroke-color="#059669" debug='true'>
+<DoodleSvg name='v-click' :duration="2000" stroke-color="#059669" :debug='false'>
   <svg viewBox="0 0 200 100" class="w-60 h-30">
     <path d="M20,50 L180,50" fill="none"/>
     <path d="M170,40 L180,50 L170,60" fill="none"/>
