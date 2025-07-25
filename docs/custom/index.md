@@ -72,7 +72,8 @@ colorSchema: auto
 # router mode for vue-router, can be "history" or "hash"
 routerMode: history
 # aspect ratio for the slides
-aspectRatio: 16/9
+# e.g. 16/9, 4/3, or 'dynamic' for responsive mode
+aspectRatio: dynamic
 # real width of the canvas, unit in px
 canvasWidth: 980
 # used for theme customization, will inject root styles as `--slidev-theme-x` for attribute `x`

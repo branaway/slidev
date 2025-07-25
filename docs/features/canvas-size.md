@@ -23,10 +23,14 @@ canvasWidth: 980
 # Your slides here
 ```
 
-To scale several slides in your presentation, you can use the `zoom` option:
+You can also set `aspectRatio: dynamic` (or `aspectRatio: free`) to make your slides responsive to the browser window. In this mode, the slide container will not enforce a fixed aspect ratio—content will flow naturally, and any overflow will be scrollable. This is ideal for web presentations where you want to use all available space.
 
-<LinkCard link="features/zoom-slide" />
+```md
+---
+aspectRatio: dynamic
+---
+```
 
-To adjust the size of some elements on your slides, you can use the `Transform` component:
+> **Note:** The dynamic aspect mode is only applied in the main browser presentation. Print/export/snapshot features will continue to use the fixed aspect ratio.
 
-<LinkCard link="features/transform-component" />
+To scale several slides in your presentation, you can use the `

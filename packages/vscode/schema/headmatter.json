@@ -513,6 +513,18 @@
           "description": "bran: extensions per vite.config.ts",
           "markdownDescription": "bran: extensions\nper vite.config.ts"
         },
+        "streamingMarkdown": {
+          "type": "boolean",
+          "description": "Enable streaming markdown rendering effect",
+          "markdownDescription": "Enable streaming markdown rendering effect",
+          "default": false
+        },
+        "streamingSpeed": {
+          "type": "number",
+          "description": "Speed of streaming markdown rendering in milliseconds per character",
+          "markdownDescription": "Speed of streaming markdown rendering in milliseconds per character",
+          "default": 20
+        },
         "defaults": {
           "$ref": "#/definitions/Frontmatter",
           "description": "Default frontmatter options applied to all slides",

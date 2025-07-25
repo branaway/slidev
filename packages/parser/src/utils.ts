@@ -27,9 +27,11 @@ export function parseRangeString(total: number, rangeStr?: string) {
 }
 
 /**
- * Accepts `16/9` `1:1` `3x4`
+ * Accepts `16/9` `1:1` `3x4` or 'dynamic'/'free' for responsive aspect
  */
 export function parseAspectRatio(str: string | number) {
+  if (str === 'dynamic' || str === 'free')
+    return 'dynamic'
   if (isNumber(str))
     return str
   if (!Number.isNaN(+str))

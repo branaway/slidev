@@ -96,11 +96,11 @@ export interface HeadmatterConfig extends TransitionOptions {
   routerMode?: 'hash' | 'history'
   /**
    * Aspect ratio for slides
-   * should be like `16/9` or `1:1`
+   * should be like `16/9`, `1:1`, or `'dynamic'` for responsive aspect
    *
    * @default '16/9'
    */
-  aspectRatio?: number
+  aspectRatio?: number | string
   /**
    * The actual width for slides canvas.
    * unit in px.
